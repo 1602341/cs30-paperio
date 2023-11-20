@@ -8,6 +8,7 @@ A remake of the classic 2D Paper.io game. A single player will be constantly mov
 - Flood Fill Algorithm
 - Other Interactive Characters/AI
 - Viewpoint follows the character you control
+- Character controlled by mouse
 
 ## Nice To Have
 - A 3D element 
