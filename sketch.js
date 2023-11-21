@@ -13,6 +13,7 @@
 // Pixels:
 // https://p5js.org/reference/#/p5/pixels
 
+let section;
 
 function setup() {
   createCanvas(600, 600);
@@ -22,7 +23,12 @@ function setup() {
 
 function draw() {
   background(220);
-  circle(mouseX, mouseY, 100);
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      noStroke();
+      circle(mouseX, mouseY, 100);
+    }
+  }
 }
 
 function fillFinder() {
@@ -30,6 +36,6 @@ function fillFinder() {
 }
 
 function dfs(section, x, y, oldColor, newColor) {
-  
+
 }
 
