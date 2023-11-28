@@ -7,7 +7,7 @@ A remake of the classic 2D Paper.io game. A single player will be constantly mov
 - Death screen
 - Flood Fill Algorithm
 - Other Interactive Characters/AI
-- Viewpoint follows the character you control
+- Music and sound effects
 - Character controlled by mouse
 
 ## Nice To Have
@@ -18,4 +18,5 @@ A remake of the classic 2D Paper.io game. A single player will be constantly mov
 - Choice of different colours or skins
 - Different shaped objects
 - Different shaped rooms
+- Viewpoint follows the character you control
 

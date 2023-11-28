@@ -44,7 +44,6 @@ function setup() {
 
 function draw() {
   background(220);
-  circle(width/2, height/2, 200);
   displayGrid();
   //drawShape();
   //circle(width/2, height/2, 200);
@@ -60,15 +59,46 @@ function mousePressed() {
   // updatePixels();
 }
 
+// class RecursiveFill {
+//   constructor(x, y, colour) {
+//     this.x = x;
+//     this.y = y;
+//     this.colour = "red"
+//   }
+
+//   fill(x, y, colour) {
+//     if (isValidSquare(x, y, colour)) {
+//       grid[x][y] = 'red';
+//       colour = grid[y][x];
+//       this.fill(x + 1, y, colour);
+//       this.fill(x - 1, y, colour);
+//       this.fill(x, y + 1, colour);
+//       this.fill(x, y - 1, colour); 
+//     }
+//   }
+//   return;
+// }
+
+// function isValidSquare(x, y, colour) {
+//   return x > 0 && x < width && y > 0 && y < height && grid[x][y] === colour;
+// }
+
+// function implementFlood() {
+
+// }
+
+
 function floodFill(x, y, newColor) {
   for (let y = 0; y < GRID_SIZE; y++) { 
     for (let x = 0; x < GRID_SIZE; x++) {
-      if (x <= 0 || x > width || y <= 0 || y > height || state !== "blank") {
+      fill("red")
+      if (x < 0 || x > width || y < 0 || y > height || state !== "black" || grid[y][x] === newColor) {
         return;
       }
       else {
+        state = "full"
         newColor = "red"
-        grid[y][x] = "full"
+        grid[y][x] = newColor
         floodFill(x + 1, y, newColor);
         floodFill(x - 1, y, newColor);
         floodFill(x, y + 1, newColor);
@@ -78,36 +108,18 @@ function floodFill(x, y, newColor) {
   }
 }
 
-// function bucket(x, y, ii, R, G, B, ro, go, bo) {
-//   let r = pixels[(y * width + x) * 4];
-//   let g = pixels[(y * width + x) * 4 + 1];
-//   let b = pixels[(y * width + x) * 4 + 2];
-//   if (r === ro && g === go && b === bo) {
-//     pixels[(y * width + x) * 4] = R;
-//     pixels[(y * width + x) * 4+1] = G;
-//     pixels[(y * width + x) * 4+2] = B;
-//     for (let i = -1; i <= 1; i++) {
-//       if (i === 0) continue;
-//       if (x + i >= width) break;
-//       if (x + i < 0) break;
-//       bucket(x + i, y, ii+1, R, G, B, ro, go, bo);
-//     }
-//     for (let i = -1; i <= 1; i++) {
-//       if (i === 0) continue;
-//       if (y + i >= width) break;
-//       if (y + i < 0) break;
-//       bucket(x, y + i, ii+1, R, G, B, ro, go, bo);
-//     }
-//   }
-// }
-
-
 
 function displayGrid() {
   for (let y = 0; y < GRID_SIZE; y++) { 
     for (let x = 0; x < GRID_SIZE; x++) {
-      fill("white");
-      rect(x * cellSize, y * cellSize, cellSize, cellSize);
+      if (y === 5 || y === 25) {
+        fill("red")
+        rect(x * cellSize, y * cellSize, cellSize, cellSize);
+      }
+      else {
+        fill("white");
+        rect(x * cellSize, y * cellSize, cellSize, cellSize);
+      }
     }
   }
 }
