@@ -96,9 +96,9 @@ function floodFill(x, y, newColor) {
         return;
       }
       else {
-        state = "full"
-        newColor = "red"
-        grid[y][x] = newColor
+        state = "full";
+        newColor = fill("red");
+        grid[y][x] = newColor;
         floodFill(x + 1, y, newColor);
         floodFill(x - 1, y, newColor);
         floodFill(x, y + 1, newColor);
