@@ -50,7 +50,7 @@ function draw() {
 }
 
 function mousePressed() {
-  floodFill();
+  floodFill(mouseX, mouseY, "red");
   // loadPixels();
   // let r = pixels[(mouseY * width + mouseX) * 4];
   // let g = pixels[(mouseY * width + mouseX) * 4 + 1];
