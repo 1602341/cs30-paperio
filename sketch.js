@@ -15,9 +15,8 @@
 // https://p5js.org/reference/#/p5/pixels
 
 
-// let x;
-// let y; 
-// let section;
+// let 0 = white
+// let 1 = red 
 let grid;
 let gap;
 let cellSize;
@@ -97,7 +96,7 @@ function floodFill(x, y, newColor) {
       }
       else {
         state = "full";
-        newColor = fill("red");
+        newColor = "red";
         grid[y][x] = newColor;
         floodFill(x + 1, y, newColor);
         floodFill(x - 1, y, newColor);
