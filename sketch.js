@@ -49,7 +49,7 @@ function draw() {
 }
 
 function mousePressed() {
-  floodFill(mouseX, mouseY, "red");
+  implementFlood();
   // loadPixels();
   // let r = pixels[(mouseY * width + mouseX) * 4];
   // let g = pixels[(mouseY * width + mouseX) * 4 + 1];
@@ -82,21 +82,28 @@ function mousePressed() {
 //   return x > 0 && x < width && y > 0 && y < height && grid[x][y] === colour;
 // }
 
-// function implementFlood() {
-
-// }
+function implementFlood() {
+  for (let y = 0; y < GRID_SIZE; y++) { 
+    for (let x = 0; x < GRID_SIZE; x++) {
+      if (state !== "full") {
+        fill("red");
+        floodFill(mouseX, mouseY, "red");
+      }
+    }
+  }
+}
 
 
 function floodFill(x, y, newColor) {
   for (let y = 0; y < GRID_SIZE; y++) { 
     for (let x = 0; x < GRID_SIZE; x++) {
       fill("red")
-      if (x < 0 || x > width || y < 0 || y > height || state !== "black" || grid[y][x] === newColor) {
+      if (x < 0 || x > width || y < 0 || y > height || state !== "full" || grid[y][x] === newColor) {
         return;
       }
       else {
         state = "full";
-        newColor = "red";
+        newColor = 1;
         grid[y][x] = newColor;
         floodFill(x + 1, y, newColor);
         floodFill(x - 1, y, newColor);
