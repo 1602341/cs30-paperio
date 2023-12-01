@@ -85,7 +85,7 @@ function mousePressed() {
 function implementFlood() {
   for (let y = 0; y < GRID_SIZE; y++) { 
     for (let x = 0; x < GRID_SIZE; x++) {
-      if (state !== "full") {
+      if (state === "full") {
         fill("red");
         floodFill(mouseX, mouseY, "red");
       }
@@ -97,7 +97,6 @@ function implementFlood() {
 function floodFill(x, y, newColor) {
   for (let y = 0; y < GRID_SIZE; y++) { 
     for (let x = 0; x < GRID_SIZE; x++) {
-      fill("red")
       if (x < 0 || x > width || y < 0 || y > height || state !== "full" || grid[y][x] === newColor) {
         return;
       }
