@@ -1,8 +1,13 @@
 html, body {
-  margin: 10;
-  padding: 10;
+  margin: 20;
+  padding: 50;
 }
 
 canvas {
-  display: block;
+  display: flex;
+  /* This centers our sketch horizontally. */
+  justify-content: center;
+
+  /* This centers our sketch vertically. */
+  align-items: center;
 }

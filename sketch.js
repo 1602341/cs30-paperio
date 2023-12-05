@@ -16,7 +16,8 @@
 
 
 // let 0 = white
-// let 1 = red 
+// let 8 = pink
+// let 9 = red
 let grid;
 let gap;
 let cellSize;
@@ -26,10 +27,11 @@ let y;
 let newColor;
 let playerX = 0;
 let playerY = 0;
-const GRID_SIZE = 30;
+const GRID_SIZE = 50;
 
 function setup() {
-  createCanvas(600, 600);
+  cnv = createCanvas(windowWidth, windowHeight);
+  centerCanvas();
   loadPixels();
   grid = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
 grid[playerY][playerX] = 9;
@@ -42,24 +44,21 @@ grid[playerY][playerX] = 9;
   pixelDensity(5);
 }
 
+var cnv;
 
+function centerCanvas() {
+  var x = (windowWidth - width) / 2;
+  var y = (windowHeight - height) / 2;
+  cnv.position(x, y);
+}
 
 function draw() {
   background(220);
-  displayGrid();
   noStroke();
+  displayGrid();
   fill("red");
-  if (mouseIsPressed) {
-    circle(mouseX, mouseY, 50);
-  }
 }
 
-function mousePressed() {
-  let y = Math.floor(mouseY/cellSize);
-  let x = Math.floor(mouseX/cellSize)
-  //implementFlood();
-  // loadPixels();
-}
 
 function implementFlood() {
   for (let y = 0; y < GRID_SIZE; y++) { 
@@ -102,22 +101,22 @@ function movePlayer(x, y) {
       playerY += y;
       //update grid
       grid[playerY][playerX] = 9;
-      grid[tempY][tempX] = 0;
+      grid[tempY][tempX] = 8;
     }
   }
 }
 
-function keyTyped() {
-  if (key === "s") {
+function keyPressed() {
+  if (key === "s" || (key === DOWN_ARROW)) {
     movePlayer(0, 1);
   }
-  else if (key === "w") {
+  else if (key === "w"|| key === 38) {
     movePlayer(0, -1);
   }
-  else if (key === "a") {
+  else if (key === "a"|| key === 37) {
     movePlayer(-1, 0);
   }
-  else if (key === "d") {
+  else if (key === "d"|| key === 68) {
     movePlayer(1, 0);
   }
 }
@@ -131,8 +130,12 @@ function displayGrid() {
         fill("red")
         rect(x * cellSize, y * cellSize, cellSize, cellSize);
       }
+      else if (grid[y][x] === 8) {
+        fill("pink")
+        rect(x * cellSize, y * cellSize, cellSize, cellSize);
+      }
       else {
-        fill("pink");
+        fill("white");
         rect(x * cellSize, y * cellSize, cellSize, cellSize);
       }
     }
