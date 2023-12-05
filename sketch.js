@@ -24,12 +24,15 @@ let state = "blank";
 let x;
 let y;
 let newColor;
-const GRID_SIZE = 50;
+let playerX = 0;
+let playerY = 0;
+const GRID_SIZE = 30;
 
 function setup() {
   createCanvas(600, 600);
   loadPixels();
   grid = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
+grid[playerY][playerX] = 9;
   if (height >= width) {
     cellSize = width/GRID_SIZE
   }
@@ -44,48 +47,24 @@ function setup() {
 function draw() {
   background(220);
   displayGrid();
-  //drawShape();
-  //circle(width/2, height/2, 200);
+  noStroke();
+  fill("red");
+  if (mouseIsPressed) {
+    circle(mouseX, mouseY, 50);
+  }
 }
 
 function mousePressed() {
-  implementFlood();
+  let y = Math.floor(mouseY/cellSize);
+  let x = Math.floor(mouseX/cellSize)
+  //implementFlood();
   // loadPixels();
-  // let r = pixels[(mouseY * width + mouseX) * 4];
-  // let g = pixels[(mouseY * width + mouseX) * 4 + 1];
-  // let b = pixels[(mouseY * width + mouseX) * 4 + 2];
-  // bucket(mouseX, mouseY, 0, random(255), random(255), random(255), r, g, b);
-  // updatePixels();
 }
-
-// class RecursiveFill {
-//   constructor(x, y, colour) {
-//     this.x = x;
-//     this.y = y;
-//     this.colour = "red"
-//   }
-
-//   fill(x, y, colour) {
-//     if (isValidSquare(x, y, colour)) {
-//       grid[x][y] = 'red';
-//       colour = grid[y][x];
-//       this.fill(x + 1, y, colour);
-//       this.fill(x - 1, y, colour);
-//       this.fill(x, y + 1, colour);
-//       this.fill(x, y - 1, colour); 
-//     }
-//   }
-//   return;
-// }
-
-// function isValidSquare(x, y, colour) {
-//   return x > 0 && x < width && y > 0 && y < height && grid[x][y] === colour;
-// }
 
 function implementFlood() {
   for (let y = 0; y < GRID_SIZE; y++) { 
     for (let x = 0; x < GRID_SIZE; x++) {
-      if (state === "full") {
+      if (state !== "full") {
         fill("red");
         floodFill(mouseX, mouseY, "red");
       }
@@ -97,7 +76,7 @@ function implementFlood() {
 function floodFill(x, y, newColor) {
   for (let y = 0; y < GRID_SIZE; y++) { 
     for (let x = 0; x < GRID_SIZE; x++) {
-      if (x < 0 || x > width || y < 0 || y > height || state !== "full" || grid[y][x] === newColor) {
+      if (x < 0 || x > width || y < 0 || y > height || state !== "full" || grid[y][x] !== newColor) {
         return;
       }
       else {
@@ -113,16 +92,47 @@ function floodFill(x, y, newColor) {
   }
 }
 
+function movePlayer(x, y) {
+  //edge case check
+  if (playerX + x >= 0 && playerX + x < GRID_SIZE && playerY + y >= 0 && playerY + y < GRID_SIZE) {
+    if (grid[playerY + y][playerX + x] === 0) {
+      let tempX = playerX;
+      let tempY = playerY;
+      playerX += x;
+      playerY += y;
+      //update grid
+      grid[playerY][playerX] = 9;
+      grid[tempY][tempX] = 0;
+    }
+  }
+}
+
+function keyTyped() {
+  if (key === "s") {
+    movePlayer(0, 1);
+  }
+  else if (key === "w") {
+    movePlayer(0, -1);
+  }
+  else if (key === "a") {
+    movePlayer(-1, 0);
+  }
+  else if (key === "d") {
+    movePlayer(1, 0);
+  }
+}
+
+
 
 function displayGrid() {
   for (let y = 0; y < GRID_SIZE; y++) { 
     for (let x = 0; x < GRID_SIZE; x++) {
-      if (y === 5 || y === 25) {
+      if (grid[y][x] === 9) {
         fill("red")
         rect(x * cellSize, y * cellSize, cellSize, cellSize);
       }
       else {
-        fill("white");
+        fill("pink");
         rect(x * cellSize, y * cellSize, cellSize, cellSize);
       }
     }
