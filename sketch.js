@@ -103,20 +103,29 @@ function movePlayer(x, y) {
       grid[playerY][playerX] = 9;
       grid[tempY][tempX] = 8;
     }
+    else if (grid[playerY + y][playerX + x] === 8) {
+      let tempX = playerX;
+      let tempY = playerY;
+      playerX += x;
+      playerY += y;
+      //update grid
+      grid[playerY][playerX] = 9;
+      generateEmptyGrid(GRID_SIZE, GRID_SIZE)
+    }
   }
 }
 
 function keyPressed() {
-  if (key === "s" || (key === DOWN_ARROW)) {
+  if (key === "s") {
     movePlayer(0, 1);
   }
-  else if (key === "w"|| key === 38) {
+  else if (key === "w") {
     movePlayer(0, -1);
   }
-  else if (key === "a"|| key === 37) {
+  else if (key === "a") {
     movePlayer(-1, 0);
   }
-  else if (key === "d"|| key === 68) {
+  else if (key === "d") {
     movePlayer(1, 0);
   }
 }
