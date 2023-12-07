@@ -29,6 +29,14 @@ let playerX = 0;
 let playerY = 0;
 const GRID_SIZE = 50;
 
+class Character {
+  constructor (x, y, color) {
+    this.x = x;
+    this.y = y;
+    this.newColor = color;
+  }
+}
+
 function setup() {
   cnv = createCanvas(windowWidth, windowHeight);
   centerCanvas();
@@ -108,9 +116,10 @@ function movePlayer(x, y) {
       let tempY = playerY;
       playerX += x;
       playerY += y;
-      //update grid
       grid[playerY][playerX] = 9;
-      generateEmptyGrid(GRID_SIZE, GRID_SIZE)
+      grid[playerY - 1][playerX - 1] = 0;
+      generateEmptyGrid(GRID_SIZE, GRID_SIZE);
+      displayGrid();
     }
   }
 }
