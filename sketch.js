@@ -16,7 +16,8 @@
 
 
 // let 0 = white
-// let 8 = pink
+// let 8 = trail pink
+// let 4 = block pink
 // let 9 = red
 let grid;
 let gap;
@@ -111,30 +112,30 @@ function movePlayer(x, y) {
       grid[playerY][playerX] = 9;
       grid[tempY][tempX] = 8;
     }
-    else if (grid[playerY + y][playerX + x] === 8) {
-      let tempX = playerX;
-      let tempY = playerY;
-      playerX += x;
-      playerY += y;
-      grid[playerY][playerX] = 9;
-      grid[playerY - 1][playerX - 1] = 0;
-      generateEmptyGrid(GRID_SIZE, GRID_SIZE);
-      displayGrid();
+    else if ((grid[playerY + y][playerX + x] === 8)) {
+      // let tempX = playerX;
+      // let tempY = playerY;
+      // playerX += x;
+      // playerY += y;
+      // grid[playerY][playerX] = 0;
+      // grid[playerY - 1][playerX - 1] = 0;
+      grid = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
+      grid[y][x] = 20;
     }
   }
 }
 
 function keyPressed() {
-  if (key === "s") {
+  if (key === "s") {//s
     movePlayer(0, 1);
   }
-  else if (key === "w") {
+  else if (key === "w") {//w
     movePlayer(0, -1);
   }
-  else if (key === "a") {
+  else if (key === "a") {//a
     movePlayer(-1, 0);
   }
-  else if (key === "d") {
+  else if (key === "d") {//d
     movePlayer(1, 0);
   }
 }
@@ -152,6 +153,10 @@ function displayGrid() {
         fill("pink")
         rect(x * cellSize, y * cellSize, cellSize, cellSize);
       }
+      // else if (grid[y][x] === 4) {
+      //   fill(fill(255, 0, 0, 100));
+      //   rect(x * cellSize, y * cellSize, cellSize, cellSize);
+      // }
       else {
         fill("white");
         rect(x * cellSize, y * cellSize, cellSize, cellSize);
