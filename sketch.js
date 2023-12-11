@@ -19,7 +19,7 @@
 // let 8 = trail pink
 // let 4 = block pink
 // let 9 = red
-let grid;
+let gridOne;
 let gap;
 let cellSize;
 let state = "blank";
@@ -29,6 +29,7 @@ let newColor;
 let playerX = 0;
 let playerY = 0;
 const GRID_SIZE = 50;
+let gameMode = "start screen";
 
 class Character {
   constructor (x, y, color) {
@@ -42,8 +43,8 @@ function setup() {
   cnv = createCanvas(windowWidth, windowHeight);
   centerCanvas();
   loadPixels();
-  grid = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
-grid[playerY][playerX] = 9;
+  gridOne = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
+gridOne[playerY][playerX] = 9;
   if (height >= width) {
     cellSize = width/GRID_SIZE
   }
@@ -54,6 +55,18 @@ grid[playerY][playerX] = 9;
 }
 
 var cnv;
+
+function startScreen() {
+
+}
+
+function gameScreen() {
+
+}
+
+function endScreen() {
+  background(220);
+}
 
 function centerCanvas() {
   var x = (windowWidth - width) / 2;
@@ -67,6 +80,16 @@ function draw() {
   displayGrid();
   fill("red");
 }
+
+// function homeBase() {
+//   for (let y = 0; y < GRID_SIZE; y++) { 
+//     for (let x = 0; x < GRID_SIZE; x++) {
+//       if (y = 5 && x > 25) {
+//         gridOne[y][x] = 4;
+//       }
+//     }
+//   }
+// }
 
 
 function implementFlood() {
@@ -84,13 +107,13 @@ function implementFlood() {
 function floodFill(x, y, newColor) {
   for (let y = 0; y < GRID_SIZE; y++) { 
     for (let x = 0; x < GRID_SIZE; x++) {
-      if (x < 0 || x > width || y < 0 || y > height || state !== "full" || grid[y][x] !== newColor) {
+      if (x < 0 || x > width || y < 0 || y > height || state !== "full" || gridOne[y][x] !== newColor) {
         return;
       }
       else {
         state = "full";
         newColor = 1;
-        grid[y][x] = newColor;
+        gridOne[y][x] = newColor;
         floodFill(x + 1, y, newColor);
         floodFill(x - 1, y, newColor);
         floodFill(x, y + 1, newColor);
@@ -103,24 +126,21 @@ function floodFill(x, y, newColor) {
 function movePlayer(x, y) {
   //edge case check
   if (playerX + x >= 0 && playerX + x < GRID_SIZE && playerY + y >= 0 && playerY + y < GRID_SIZE) {
-    if (grid[playerY + y][playerX + x] === 0) {
+    if (gridOne[playerY + y][playerX + x] === 0) {
       let tempX = playerX;
       let tempY = playerY;
       playerX += x;
       playerY += y;
       //update grid
-      grid[playerY][playerX] = 9;
-      grid[tempY][tempX] = 8;
+      gridOne[playerY][playerX] = 9;
+      gridOne[tempY][tempX] = 8;
     }
-    else if ((grid[playerY + y][playerX + x] === 8)) {
-      // let tempX = playerX;
-      // let tempY = playerY;
-      // playerX += x;
-      // playerY += y;
-      // grid[playerY][playerX] = 0;
-      // grid[playerY - 1][playerX - 1] = 0;
-      grid = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
-      grid[y][x] = 20;
+    else if ((gridOne[playerY + y][playerX + x] === 8)) {
+      gridOne = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
+      gameMode = "end screen";
+      if (gameMode === "end screen") {
+        endScreen();
+      }
     }
   }
 }
@@ -145,15 +165,20 @@ function keyPressed() {
 function displayGrid() {
   for (let y = 0; y < GRID_SIZE; y++) { 
     for (let x = 0; x < GRID_SIZE; x++) {
-      if (grid[y][x] === 9) {
+      //homeBase();
+      if (gridOne[y][x] === 9) {
         fill("red")
         rect(x * cellSize, y * cellSize, cellSize, cellSize);
       }
-      else if (grid[y][x] === 8) {
+      else if (y <= 5 && x < 10) {
+        fill(255, 0, 70, 100);
+        rect(x * cellSize, y * cellSize, cellSize, cellSize);
+      }
+      else if (gridOne[y][x] === 8) {
         fill("pink")
         rect(x * cellSize, y * cellSize, cellSize, cellSize);
       }
-      // else if (grid[y][x] === 4) {
+      // else if (gridOne[y][x] === 4) {
       //   fill(fill(255, 0, 0, 100));
       //   rect(x * cellSize, y * cellSize, cellSize, cellSize);
       // }
