@@ -39,9 +39,12 @@ class Character {
   }
 }
 
+//var cnv;
+
 function setup() {
-  cnv = createCanvas(windowWidth, windowHeight);
-  centerCanvas();
+  //cnv = createCanvas(windowWidth, windowHeight);
+  createCanvas(windowWidth, windowHeight);
+  //centerCanvas();
   loadPixels();
   gridOne = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
 gridOne[playerY][playerX] = 9;
@@ -54,7 +57,6 @@ gridOne[playerY][playerX] = 9;
   pixelDensity(5);
 }
 
-var cnv;
 
 function startScreen() {
 
@@ -65,14 +67,15 @@ function gameScreen() {
 }
 
 function endScreen() {
-  background(220);
+  text("you lost");
+  noLoop();
 }
 
-function centerCanvas() {
-  var x = (windowWidth - width) / 2;
-  var y = (windowHeight - height) / 2;
-  cnv.position(x, y);
-}
+// function centerCanvas() {
+//   var x = (windowWidth - width) / 2;
+//   var y = (windowHeight - height) / 2;
+//   cnv.position(x, y);
+// }
 
 function draw() {
   background(220);
@@ -137,9 +140,14 @@ function movePlayer(x, y) {
     }
     else if ((gridOne[playerY + y][playerX + x] === 8)) {
       gridOne = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
-      gameMode = "end screen";
-      if (gameMode === "end screen") {
-        endScreen();
+      // gameMode = "end screen";
+      // if (gameMode === "end screen") {
+      endScreen();
+      //}
+    }
+    else if ((gridOne[playerY + y][playerX + x] === 4)) {
+      if (gridOne[y][x] === 8) {
+        gridOne[y][x] = 4
       }
     }
   }
