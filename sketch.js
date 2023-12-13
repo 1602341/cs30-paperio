@@ -29,7 +29,8 @@ let newColor;
 let playerX = 0;
 let playerY = 0;
 const GRID_SIZE = 50;
-let gameMode = "start screen";
+let gameMode = "game";
+let flood = false;
 
 class Character {
   constructor (x, y, color) {
@@ -38,6 +39,7 @@ class Character {
     this.newColor = color;
   }
 }
+
 
 //var cnv;
 
@@ -59,7 +61,7 @@ gridOne[playerY][playerX] = 9;
 
 
 function startScreen() {
-
+  
 }
 
 function gameScreen() {
@@ -67,7 +69,7 @@ function gameScreen() {
 }
 
 function endScreen() {
-  text("you lost");
+  gameMode = "end screen";
   noLoop();
 }
 
@@ -85,16 +87,16 @@ function draw() {
 }
 
 // function homeBase() {
-//   for (let y = 0; y < GRID_SIZE; y++) { 
-//     for (let x = 0; x < GRID_SIZE; x++) {
-//       if (y = 5 && x > 25) {
-//         gridOne[y][x] = 4;
-//       }
-//     }
-//   }
-// }
-
-
+  //   for (let y = 0; y < GRID_SIZE; y++) { 
+    //     for (let x = 0; x < GRID_SIZE; x++) {
+      //       if (y = 5 && x > 25) {
+        //         gridOne[y][x] = 4;
+        //       }
+        //     }
+        //   }
+        // }
+        
+        
 function implementFlood() {
   for (let y = 0; y < GRID_SIZE; y++) { 
     for (let x = 0; x < GRID_SIZE; x++) {
@@ -140,15 +142,11 @@ function movePlayer(x, y) {
     }
     else if ((gridOne[playerY + y][playerX + x] === 8)) {
       gridOne = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
-      // gameMode = "end screen";
-      // if (gameMode === "end screen") {
+      gameMode = "end screen";
       endScreen();
-      //}
     }
     else if ((gridOne[playerY + y][playerX + x] === 4)) {
-      if (gridOne[y][x] === 8) {
-        gridOne[y][x] = 4
-      }
+      implementFlood();
     }
   }
 }
@@ -170,6 +168,27 @@ function keyPressed() {
 
 
 
+
+
+// class Land {
+//   constructor (color) {
+//     this.x;
+//     this.y;
+//     this.color = color;
+//   }
+//   create() {
+//     for (let this.y = 0; this.y < GRID_SIZE; this.y++) { 
+//       for (let this.x = 0; this.x < GRID_SIZE; this.x++) {
+//         if (gameMode === "end screen") {
+//           if (y <= 5 && x < 10) {
+//             fill(255, 0, 70, 100);
+//             rect(x * cellSize, y * cellSize, cellSize, cellSize);
+//           }
+//         }
+//       }
+//     }
+//   }
+// }
 function displayGrid() {
   for (let y = 0; y < GRID_SIZE; y++) { 
     for (let x = 0; x < GRID_SIZE; x++) {
@@ -178,18 +197,43 @@ function displayGrid() {
         fill("red")
         rect(x * cellSize, y * cellSize, cellSize, cellSize);
       }
+      //pink
       else if (y <= 5 && x < 10) {
-        fill(255, 0, 70, 100);
-        rect(x * cellSize, y * cellSize, cellSize, cellSize);
+        if (gameMode === "game") {
+          fill(255, 0, 70, 100);
+          rect(x * cellSize, y * cellSize, cellSize, cellSize);
+        }
+        else if (gameMode === "end screen") {
+          fill("white");
+          rect(x * cellSize, y * cellSize, cellSize, cellSize);
+        }
       }
+      // //blue
+      // else if (y <= 5 && x > 40) {
+      //   if (gameMode === "game") {
+      //     fill("blue");
+      //     rect(x * cellSize, y * cellSize, cellSize, cellSize);
+      //   }
+      //   else if (gameMode === "end screen") {
+      //     fill("white");
+      //     rect(x * cellSize, y * cellSize, cellSize, cellSize);
+      //   }
+      // }
+      // //green
+      // else if (y >= 45 && x < 10) {
+      //   if (gameMode === "game") {
+      //     fill("green");
+      //     rect(x * cellSize, y * cellSize, cellSize, cellSize);
+      //   }
+      //   else if (gameMode === "end screen") {
+      //     fill("white");
+      //     rect(x * cellSize, y * cellSize, cellSize, cellSize);
+      //   }
+      // }
       else if (gridOne[y][x] === 8) {
         fill("pink")
         rect(x * cellSize, y * cellSize, cellSize, cellSize);
       }
-      // else if (gridOne[y][x] === 4) {
-      //   fill(fill(255, 0, 0, 100));
-      //   rect(x * cellSize, y * cellSize, cellSize, cellSize);
-      // }
       else {
         fill("white");
         rect(x * cellSize, y * cellSize, cellSize, cellSize);
