@@ -138,7 +138,12 @@ function movePlayer(x, y) {
       playerY += y;
       //update grid
       gridOne[playerY][playerX] = 9;
-      gridOne[tempY][tempX] = 8;
+      if (playerY <= 5 && playerX < 10) {
+        gridOne[tempY][tempX] = 4;
+      }
+      else {
+        gridOne[tempY][tempX] = 8;
+      }
     }
     else if ((gridOne[playerY + y][playerX + x] === 8)) {
       gridOne = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
