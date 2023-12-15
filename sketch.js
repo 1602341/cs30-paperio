@@ -131,7 +131,12 @@ function floodFill(x, y, newColor) {
 function movePlayer(x, y) {
   //edge case check
   if (playerX + x >= 0 && playerX + x < GRID_SIZE && playerY + y >= 0 && playerY + y < GRID_SIZE) {
-    if (gridOne[playerY + y][playerX + x] === 0) {
+    if ((gridOne[playerY + y][playerX + x] === 4)) {
+      if (gridOne[y][x] === 8) {
+        gridOne[y][x] = 4;
+      } 
+    }
+    if ((gridOne[playerY + y][playerX + x] === 0) || (gridOne[playerY + y][playerX + x] === 4)) {
       let tempX = playerX;
       let tempY = playerY;
       playerX += x;
@@ -194,6 +199,8 @@ function keyPressed() {
 //     }
 //   }
 // }
+
+
 function displayGrid() {
   for (let y = 0; y < GRID_SIZE; y++) { 
     for (let x = 0; x < GRID_SIZE; x++) {
@@ -209,7 +216,7 @@ function displayGrid() {
           rect(x * cellSize, y * cellSize, cellSize, cellSize);
         }
         else if (gameMode === "end screen") {
-          fill("white");
+          fill("grey");
           rect(x * cellSize, y * cellSize, cellSize, cellSize);
         }
       }
@@ -240,7 +247,7 @@ function displayGrid() {
         rect(x * cellSize, y * cellSize, cellSize, cellSize);
       }
       else {
-        fill("white");
+        fill("grey");
         rect(x * cellSize, y * cellSize, cellSize, cellSize);
       }
     }
