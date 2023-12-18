@@ -26,10 +26,13 @@ let state = "blank";
 let x;
 let y;
 let newColor;
+let logo;
+let endBoom;
+let gameMusic;
 let playerX = 0;
 let playerY = 0;
 const GRID_SIZE = 50;
-let gameMode = "game";
+let gameMode = "start screen";
 let flood = false;
 
 class Character {
@@ -40,37 +43,54 @@ class Character {
   }
 }
 
-
-//var cnv;
+function preload() {
+  logo = loadImage("paperio.png");
+  endBoom = loadSound("endBoom.wav");
+  //gameMusic = loadSound("background-sound.mp3")
+}
 
 function setup() {
   //cnv = createCanvas(windowWidth, windowHeight);
-  createCanvas(windowWidth, windowHeight);
+  createCanvas(500, 500);
   //centerCanvas();
   loadPixels();
-  gridOne = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
-gridOne[playerY][playerX] = 9;
-  if (height >= width) {
-    cellSize = width/GRID_SIZE
-  }
-  else if (height < width) {
-    cellSize = height/GRID_SIZE
-  }
-  pixelDensity(5);
+  //if (gameMode === "game") {
+    gridOne = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
+    gridOne[playerY][playerX] = 9;
+    if (height >= width) {
+      cellSize = width/GRID_SIZE
+    }
+    else if (height < width) {
+      cellSize = height/GRID_SIZE
+    }
+    pixelDensity(5);
+ // }
 }
 
 
 function startScreen() {
-  
+  if (gameMode === "start screen") {
+    //display title
+    image(logo, 250, 150, logo.width/2, logo.height/2);
+    //create start button
+    textSize(50);
+    fill('black')
+    imageMode(CENTER)
+    rect(GRID_SIZE/2 + 130, GRID_SIZE/2 + 250, 200, 100);
+    fill('white');
+    text('START', GRID_SIZE/2 + 150, GRID_SIZE/2 + 320);
+  }
 }
 
-function gameScreen() {
-
-}
 
 function endScreen() {
   gameMode = "end screen";
-  noLoop();
+  //gameMusic.stop();
+  createCanvas(500, 500);
+  textSize(50);
+  fill('black');
+  text('SCORE', GRID_SIZE/2 + 150, GRID_SIZE/2 + 400);
+  //noLoop();
 }
 
 // function centerCanvas() {
@@ -79,11 +99,32 @@ function endScreen() {
 //   cnv.position(x, y);
 // }
 
+//start button
+function isInRect(x, y, top, bottom, left, right) {
+  return x >= left && x <= right && y >= top && y <= bottom;
+}
+
+function mousePressed() {
+  let startClicked = isInRect(mouseX, mouseY, GRID_SIZE/2 + 250, 
+  (GRID_SIZE/2 + 250) + 100, GRID_SIZE/2 + 130,(GRID_SIZE/2 + 130) + 200);
+  if (startClicked) {
+    gameMode = "game";
+  }
+}
+
 function draw() {
-  background(220);
+  background("grey");
   noStroke();
-  displayGrid();
-  fill("red");
+  if (gameMode === "start screen") {
+    startScreen();
+  }
+  else if (gameMode === "game") {
+    displayGrid();
+    //gameMusic.setVolume(0.01);
+    //gameMusic.play();
+    //gameMusic.loop();
+  }
+  //fill("red");
 }
 
 // function homeBase() {
@@ -151,6 +192,7 @@ function movePlayer(x, y) {
       }
     }
     else if ((gridOne[playerY + y][playerX + x] === 8)) {
+      endBoom.play();
       gridOne = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
       gameMode = "end screen";
       endScreen();

@@ -3,12 +3,12 @@
 A remake of the classic 2D Paper.io game. A single player will be constantly moving around the screen, trying to increase its land. 
 
 ## Needs To Have List 
-- Start screen
-- Death screen
-- Flood Fill Algorithm
+- Start screen ☑
+- Death screen ☑/2
+- Flood Fill Algorithm ☑/2
 - Other Interactive Characters/AI
-- Music and sound effects
-- Character controlled by WASD and Arrows
+- Music and sound effects ☑
+- Character controlled by WASD ☑
 
 ## Nice To Have
 - A 3D element 
