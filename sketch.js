@@ -50,8 +50,8 @@ function preload() {
 }
 
 function setup() {
-  //cnv = createCanvas(windowWidth, windowHeight);
-  createCanvas(500, 500);
+  //createCanvas(windowWidth, windowHeight);
+  new Canvas("1.5: 1.5");
   //centerCanvas();
   loadPixels();
   //if (gameMode === "game") {
@@ -71,14 +71,16 @@ function setup() {
 function startScreen() {
   if (gameMode === "start screen") {
     //display title
-    image(logo, 250, 150, logo.width/2, logo.height/2);
+    imageMode(CENTER);
+    image(logo, width/2, height/2 - height/4, logo.width * 4, logo.height * 4);
     //create start button
-    textSize(50);
+    textSize(width/12);
     fill('black')
-    imageMode(CENTER)
-    rect(GRID_SIZE/2 + 130, GRID_SIZE/2 + 250, 200, 100);
+    imageMode(CORNER)
+    rect(width/2 - width/6, height/2, width/3, height/4);
     fill('white');
-    text('START', GRID_SIZE/2 + 150, GRID_SIZE/2 + 320);
+    textAlign(CENTER);
+    text('START', width/2 - width/6, height/2 + height/12, width/3);
   }
 }
 
@@ -105,8 +107,8 @@ function isInRect(x, y, top, bottom, left, right) {
 }
 
 function mousePressed() {
-  let startClicked = isInRect(mouseX, mouseY, GRID_SIZE/2 + 250, 
-  (GRID_SIZE/2 + 250) + 100, GRID_SIZE/2 + 130,(GRID_SIZE/2 + 130) + 200);
+  let startClicked = isInRect(mouseX, mouseY, width/2 - width/6, 
+  height/2, (width/2 - width/6) + width/3, height/2 + height/4);
   if (startClicked) {
     gameMode = "game";
   }
