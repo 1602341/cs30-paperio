@@ -27,12 +27,13 @@ let x;
 let y;
 let newColor;
 let logo;
+let startBackground;
 let endBoom;
 let gameMusic;
 let playerX = 0;
 let playerY = 0;
 const GRID_SIZE = 50;
-let gameMode = "game";
+let gameMode = "start screen";
 let flood = false;
 
 class Character {
@@ -45,8 +46,9 @@ class Character {
 
 function preload() {
   logo = loadImage("paperio.png");
+  startBackground = loadImage("paperio-background.png")
   endBoom = loadSound("endBoom.wav");
-  //gameMusic = loadSound("background-sound.mp3")
+  gameMusic = loadSound("background-sound.mp3")
 }
 
 function setup() {
@@ -55,22 +57,27 @@ function setup() {
   //centerCanvas();
   loadPixels();
   //if (gameMode === "game") {
-    gridOne = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
-    gridOne[playerY][playerX] = 9;
-    if (height >= width) {
-      cellSize = width/GRID_SIZE
-    }
-    else if (height < width) {
-      cellSize = height/GRID_SIZE
-    }
-    pixelDensity(5);
- // }
+  gridOne = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
+  gridOne[playerY][playerX] = 9;
+  if (height >= width) {
+    cellSize = width/GRID_SIZE
+  }
+  else if (height < width) {
+    cellSize = height/GRID_SIZE
+  }
+  pixelDensity(5);
+  if (gameMode === "game") {
+    gameMusic.setVolume(0.01);
+    gameMusic.play();
+    gameMusic.loop();
+  }
 }
 
 
 function startScreen() {
   if (gameMode === "start screen") {
     //display title
+    background(startBackground);
     imageMode(CENTER);
     image(logo, width/2, height/2 - height/4, width/1.1 , height/4);
     //create start button
@@ -95,20 +102,14 @@ function endScreen() {
   //noLoop();
 }
 
-// function centerCanvas() {
-//   var x = (windowWidth - width) / 2;
-//   var y = (windowHeight - height) / 2;
-//   cnv.position(x, y);
-// }
-
 //start button
 function isInRect(x, y, top, bottom, left, right) {
   return x >= left && x <= right && y >= top && y <= bottom;
 }
 
 function mousePressed() {
-  let startClicked = isInRect(mouseX, mouseY, width/2 - width/6, 
-  height/2, (width/2 - width/6) + width/3, height/2 + height/4);
+  let startClicked = isInRect(mouseX, mouseY, (height/2), 
+  (height/2 + height/4), (width/2 - width/6), (width/2 - width/6 + width/3));
   if (startClicked) {
     gameMode = "game";
   }
@@ -144,7 +145,6 @@ function implementFlood() {
   for (let y = 0; y < GRID_SIZE; y++) { 
     for (let x = 0; x < GRID_SIZE; x++) {
       if (state !== "full") {
-        fill("red");
         floodFill(mouseX, mouseY, "red");
       }
     }
