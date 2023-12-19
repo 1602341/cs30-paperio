@@ -32,7 +32,7 @@ let gameMusic;
 let playerX = 0;
 let playerY = 0;
 const GRID_SIZE = 50;
-let gameMode = "start screen";
+let gameMode = "game";
 let flood = false;
 
 class Character {
@@ -72,7 +72,7 @@ function startScreen() {
   if (gameMode === "start screen") {
     //display title
     imageMode(CENTER);
-    image(logo, width/2, height/2 - height/4, logo.width * 4, logo.height * 4);
+    image(logo, width/2, height/2 - height/4, width/1.1 , height/4);
     //create start button
     textSize(width/12);
     fill('black')
