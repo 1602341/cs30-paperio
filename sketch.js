@@ -34,7 +34,7 @@ let playerX = 0;
 let playerY = 0;
 const GRID_SIZE = 50;
 let gameMode = "start screen";
-let flood = false;
+let flood = "false";
 
 class Character {
   constructor (x, y, color) {
@@ -66,11 +66,6 @@ function setup() {
     cellSize = height/GRID_SIZE
   }
   pixelDensity(5);
-  if (gameMode === "game") {
-    gameMusic.setVolume(0.01);
-    gameMusic.play();
-    gameMusic.loop();
-  }
 }
 
 
@@ -112,6 +107,15 @@ function mousePressed() {
   (height/2 + height/4), (width/2 - width/6), (width/2 - width/6 + width/3));
   if (startClicked) {
     gameMode = "game";
+    if (!gameMusic.isPlaying()) {
+      if (gameMode === "game") {
+        gameMusic.setVolume(0.5);
+        gameMusic.loop();
+        if (gameMode === "end screen"){
+          gameMusic.stop();
+        }
+      }
+    }
   }
 }
 
@@ -145,7 +149,7 @@ function implementFlood() {
   for (let y = 0; y < GRID_SIZE; y++) { 
     for (let x = 0; x < GRID_SIZE; x++) {
       if (state !== "full") {
-        floodFill(mouseX, mouseY, "red");
+        floodFill(mouseX, mouseY, fill(255, 0, 70, 100));
       }
     }
   }
@@ -175,9 +179,7 @@ function movePlayer(x, y) {
   //edge case check
   if (playerX + x >= 0 && playerX + x < GRID_SIZE && playerY + y >= 0 && playerY + y < GRID_SIZE) {
     if ((gridOne[playerY + y][playerX + x] === 4)) {
-      if (gridOne[y][x] === 8) {
-        gridOne[y][x] = 4;
-      } 
+      flood = "true";
     }
     if ((gridOne[playerY + y][playerX + x] === 0) || (gridOne[playerY + y][playerX + x] === 4)) {
       let tempX = playerX;
@@ -199,9 +201,9 @@ function movePlayer(x, y) {
       gameMode = "end screen";
       endScreen();
     }
-    else if ((gridOne[playerY + y][playerX + x] === 4)) {
-      implementFlood();
-    }
+    // else if ((gridOne[playerY + y][playerX + x] === 4)) {
+    //   //implementFlood();
+    // }
   }
 }
 
@@ -287,8 +289,14 @@ function displayGrid() {
       //   }
       // }
       else if (gridOne[y][x] === 8) {
-        fill("pink")
-        rect(x * cellSize, y * cellSize, cellSize, cellSize);
+        if (flood === "true") {
+          fill(255, 0, 70, 100)
+          rect(x * cellSize, y * cellSize, cellSize, cellSize); 
+        }
+        else {
+          fill("pink")
+          rect(x * cellSize, y * cellSize, cellSize, cellSize);
+        }
       }
       else {
         fill("grey");
