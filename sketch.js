@@ -178,7 +178,7 @@ function floodFill(x, y, newColor) {
 function movePlayer(x, y) {
   //edge case check
   if (playerX + x >= 0 && playerX + x < GRID_SIZE && playerY + y >= 0 && playerY + y < GRID_SIZE) {
-    if ((gridOne[playerY + y][playerX + x] === 4)) {
+    if (((gridOne[(playerY + y) - 1][playerX + x] === 4) || (gridOne[playerY + y][(playerX + x) - 1] === 4))) {
       flood = "true";
     }
     if ((gridOne[playerY + y][playerX + x] === 0) || (gridOne[playerY + y][playerX + x] === 4)) {
@@ -188,12 +188,7 @@ function movePlayer(x, y) {
       playerY += y;
       //update grid
       gridOne[playerY][playerX] = 9;
-      if (playerY <= 5 && playerX < 10) {
-        gridOne[tempY][tempX] = 4;
-      }
-      else {
-        gridOne[tempY][tempX] = 8;
-      }
+      gridOne[tempY][tempX] = 8;
     }
     else if ((gridOne[playerY + y][playerX + x] === 8)) {
       endBoom.play();
@@ -260,6 +255,7 @@ function displayGrid() {
         if (gameMode === "game") {
           fill(255, 0, 70, 100);
           rect(x * cellSize, y * cellSize, cellSize, cellSize);
+          gridOne[y][x] = 4;
         }
         else if (gameMode === "end screen") {
           fill("grey");
@@ -292,11 +288,16 @@ function displayGrid() {
         if (flood === "true") {
           fill(255, 0, 70, 100)
           rect(x * cellSize, y * cellSize, cellSize, cellSize); 
+          gridOne[y][x] = 4;
         }
         else {
           fill("pink")
           rect(x * cellSize, y * cellSize, cellSize, cellSize);
         }
+      }
+      else if (gridOne[y][x] === 4) {
+        fill(255, 0, 70, 100)
+        rect(x * cellSize, y * cellSize, cellSize, cellSize);
       }
       else {
         fill("grey");
