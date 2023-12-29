@@ -178,14 +178,14 @@ function floodFill(x, y, newColor) {
 function movePlayer(x, y) {
   //edge case check
   if (playerX + x >= 0 && playerX + x < GRID_SIZE && playerY + y >= 0 && playerY + y < GRID_SIZE) {
-    if (playerX + x >= 0 && playerX + x < GRID_SIZE && playerY + y >= 0 && playerY + y < GRID_SIZE) {
+   // if (playerX + x >= 9 && playerX + x < GRID_SIZE && playerY + y >= 4 && playerY + y < GRID_SIZE) {
       if (((gridOne[(playerY + y) - 1][playerX + x] === 4) 
       //|| (gridOne[(playerY + y) + 1][playerX + x] === 4)
       || (gridOne[playerY + y][(playerX + x) - 1] === 4)
       //|| (gridOne[playerY + y][(playerX + x) + 1] === 4)
       )) {
         flood = "true";
-      }
+      //}
     }
     if ((gridOne[playerY + y][playerX + x] === 0) || (gridOne[playerY + y][playerX + x] === 4)) {
       let tempX = playerX;
