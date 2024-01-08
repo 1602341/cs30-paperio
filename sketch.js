@@ -161,7 +161,7 @@ function floodFill() {//x, y, newColor) {
         while (gridOne[y][x] === 0) {
           state = "full";
           newColor = 4;
-          while (gridOne[y][x] !== 4) {
+          if ((gridOne[y][x] !== 4) && (gridOne[y][x] !== 8)) {
             gridOne[y][x] = newColor;
             floodFill(x + 1, y, newColor);
             floodFill(x - 1, y, newColor);
@@ -170,6 +170,14 @@ function floodFill() {//x, y, newColor) {
           }
         }
       }
+    }
+  }
+}
+
+function mouseClicked() {
+  if (gameMode === "game") {
+    if (flood = "true") {
+      implementFlood();
     }
   }
 }
@@ -204,6 +212,9 @@ function movePlayer(x, y) {
     }
     // else if ((gridOne[playerY + y][playerX + x] === 4)) {
     //   //implementFlood();
+    // }
+    // else if (flood === "true") {
+    //   gridOne[tempY][tempX] = 4;
     // }
   }
 }
@@ -292,7 +303,7 @@ function displayGrid() {
             rect(x * cellSize, y * cellSize, cellSize, cellSize); 
             gridOne[y][x] = 4;
             //if (mouseClicked()) {
-              implementFlood();
+            //  implementFlood();
             //}
             flood = "false"
             scoreKeeper();
