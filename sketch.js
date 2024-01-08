@@ -33,7 +33,7 @@ let gameMusic;
 let playerX = 0;
 let playerY = 0;
 const GRID_SIZE = 50;
-let gameMode = "game";
+let gameMode = "start screen";
 let flood = "false";
 let score = 0;
 
@@ -57,16 +57,15 @@ function setup() {
   new Canvas("1.5: 1.5");
   //centerCanvas();
   loadPixels();
-  //if (gameMode === "game") {
-  gridOne = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
-  gridOne[playerY][playerX] = 9;
-  if (height >= width) {
-    cellSize = width/GRID_SIZE
-  }
-  else if (height < width) {
-    cellSize = height/GRID_SIZE
-  }
-  pixelDensity(5);
+    gridOne = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
+    gridOne[playerY][playerX] = 9;
+    if (height >= width) {
+      cellSize = width/GRID_SIZE
+    }
+    else if (height < width) {
+      cellSize = height/GRID_SIZE
+    }
+    pixelDensity(5);
 }
 
 
@@ -335,7 +334,6 @@ function displayGrid() {
 }
 
 function generateEmptyGrid(cols, rows) {
-  if (gameMode === "game") {
     let newGrid = [];
     for (let y = 0; y < rows; y++) {
       newGrid.push([]);
@@ -344,7 +342,6 @@ function generateEmptyGrid(cols, rows) {
       }
     }
     return newGrid;
-  }
 }
 
 function scoreKeeper() {
