@@ -4,7 +4,7 @@ A remake of the classic 2D Paper.io game. A single player will be constantly mov
 
 ## Needs To Have List 
 - Start screen ☑
-- Death screen ☑/2
+- Death screen ☑
 - Flood Fill Algorithm ☑/2
 - Other Interactive Characters/AI
 - Music and sound effects ☑

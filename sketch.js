@@ -97,9 +97,9 @@ function endScreen() {
       gridOne[y][x] = 0;
     }
   }
-  textSize(50);
-  fill('black');
-  text('SCORE', GRID_SIZE/2, GRID_SIZE/2);
+  // textSize(50);
+  // fill('black');
+  // text('SCORE', GRID_SIZE/2, GRID_SIZE/2);
   //createCanvas(500, 500);
   // new Canvas("1.5: 1.5");
   // background("purple");
@@ -132,31 +132,14 @@ function mousePressed() {
 }
 
 function draw() {
-  background("grey");
+  background("purple");
   noStroke();
   displayGrid();
   if (gameMode === "start screen") {
     startScreen();
   }
-  //else if (gameMode === "game") {
-    //gameMusic.setVolume(0.01);
-    //gameMusic.play();
-    //gameMusic.loop();
-  //}
-  //fill("red");
 }
 
-// function homeBase() {
-  //   for (let y = 0; y < GRID_SIZE; y++) { 
-    //     for (let x = 0; x < GRID_SIZE; x++) {
-      //       if (y = 5 && x > 25) {
-        //         gridOne[y][x] = 4;
-        //       }
-        //     }
-        //   }
-        // }
-        
-        
 function implementFlood() {
   for (let y = 0; y < GRID_SIZE; y++) { 
     for (let x = 0; x < GRID_SIZE; x++) {
@@ -168,7 +151,7 @@ function implementFlood() {
 }
 
 
-function floodFill(x, y, newColor) {
+function floodFill() {//x, y, newColor) {
   for (let y = 0; y < GRID_SIZE; y++) { 
     for (let x = 0; x < GRID_SIZE; x++) {
       if (x < 0 || x > GRID_SIZE || y < 0 || y > GRID_SIZE) {// || state !== "full" || gridOne[y][x] !== newColor) {
@@ -178,11 +161,13 @@ function floodFill(x, y, newColor) {
         while (gridOne[y][x] === 0) {
           state = "full";
           newColor = 4;
-          gridOne[y][x] = newColor;
-          floodFill(x + 1, y, newColor);
-          floodFill(x - 1, y, newColor);
-          floodFill(x, y + 1, newColor);
-          floodFill(x, y - 1, newColor);
+          while (gridOne[y][x] !== 4) {
+            gridOne[y][x] = newColor;
+            floodFill(x + 1, y, newColor);
+            floodFill(x - 1, y, newColor);
+            floodFill(x, y + 1, newColor);
+            floodFill(x, y - 1, newColor);
+          }
         }
       }
     }
@@ -192,8 +177,9 @@ function floodFill(x, y, newColor) {
 function movePlayer(x, y) {
   //edge case check
   if (playerX + x >= 0 && playerX + x < GRID_SIZE && playerY + y >= 0 && playerY + y < GRID_SIZE) {
-     if (((gridOne[(playerY + y) - 1][playerX + x] === 4) 
-     || (gridOne[playerY + y][(playerX + x) - 1] === 4) 
+    //if (playerX + x >= 4 && playerX + x < GRID_SIZE && playerY + y >= 9 && playerY + y < GRID_SIZE) {
+      if (((gridOne[(playerY + y) - 1][playerX + x] === 4) 
+      || (gridOne[playerY + y][(playerX + x) - 1] === 4) 
      //|| (gridOne[(playerY + y) + 1][playerX + x] === 4)
      //|| (gridOne[playerY + y][(playerX + x) + 1] === 4)
    )) {
@@ -305,9 +291,11 @@ function displayGrid() {
             fill(255, 0, 70, 100)
             rect(x * cellSize, y * cellSize, cellSize, cellSize); 
             gridOne[y][x] = 4;
-            implementFlood();
+            //if (mouseClicked()) {
+              implementFlood();
+            //}
             flood = "false"
-            //scoreKeeper();
+            scoreKeeper();
           }
           else {
             fill("pink")
@@ -331,7 +319,7 @@ function displayGrid() {
     textFont("consolas");
     text('YOU DIED!', width/10, width/4);
     textSize(width/8);
-    text('SCORE: ' + score, width/5, width/2);
+    text('Score: ' + score, width/14, width/2);
   }
 }
 
@@ -357,4 +345,14 @@ function scoreKeeper() {
     }
   }
   //return score;
+}
+
+function blockTracker() {
+  for (let y = 0; y < GRID_SIZE; y++) { 
+    for (let x = 0; x < GRID_SIZE; x++) {
+      if (gridOne[y][x] === 4) {
+        gridOne[y][x] = "block";
+      }
+    }
+  }
 }
