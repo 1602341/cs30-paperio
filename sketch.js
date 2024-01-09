@@ -33,7 +33,7 @@ let gameMusic;
 let playerX = 0;
 let playerY = 0;
 const GRID_SIZE = 50;
-let gameMode = "start screen";
+let gameMode = "game";
 let flood = "false";
 let score = 0;
 
@@ -150,23 +150,26 @@ function implementFlood() {
 }
 
 
-function floodFill() {//x, y, newColor) {
+function floodFill(x, y, newColor) {
   for (let y = 0; y < GRID_SIZE; y++) { 
     for (let x = 0; x < GRID_SIZE; x++) {
       if (x < 0 || x > GRID_SIZE || y < 0 || y > GRID_SIZE) {// || state !== "full" || gridOne[y][x] !== newColor) {
-        return;
+        if ((gridOne[y][x] === 4) && (gridOne[y][x] === 8)) {
+          return;
+        }
       }
       else {
         while (gridOne[y][x] === 0) {
           state = "full";
-          newColor = 4;
-          if ((gridOne[y][x] !== 4) && (gridOne[y][x] !== 8)) {
-            gridOne[y][x] = newColor;
+          //newColor = 4;
+          //if ((gridOne[y][x] !== 4) && (gridOne[y][x] !== 8)) {
+            //gridOne[y][x] = newColor;
+            //newColor = fill(255, 0, 70, 100);
             floodFill(x + 1, y, newColor);
             floodFill(x - 1, y, newColor);
             floodFill(x, y + 1, newColor);
             floodFill(x, y - 1, newColor);
-          }
+          //}
         }
       }
     }
@@ -304,7 +307,7 @@ function displayGrid() {
             //if (mouseClicked()) {
             //  implementFlood();
             //}
-            flood = "false"
+            //flood = "false"
             scoreKeeper();
           }
           else {
@@ -316,12 +319,13 @@ function displayGrid() {
           fill(255, 0, 70, 100)
           rect(x * cellSize, y * cellSize, cellSize, cellSize);
         }
-            // else {
-                      //   fill("grey");
-                      //   rect(x * cellSize, y * cellSize, cellSize, cellSize);
-                      // }
+        // else {
+          //   fill("grey");
+          //   rect(x * cellSize, y * cellSize, cellSize, cellSize);
+          // }
+        }
       }
-    }
+      flood = "false";
   }
   if (gameMode === "end screen") {
     textSize(width/6);
