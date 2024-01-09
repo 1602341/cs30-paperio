@@ -22,7 +22,7 @@
 let gridOne;
 let gap;
 let cellSize;
-let state = "blank";
+//let state = "blank";
 let x;
 let y;
 let newColor;
@@ -142,9 +142,12 @@ function draw() {
 function implementFlood() {
   for (let y = 0; y < GRID_SIZE; y++) { 
     for (let x = 0; x < GRID_SIZE; x++) {
-      if (state !== "full") {
-        floodFill(mouseX, mouseY, fill(255, 0, 70, 100));
-      }
+      //if (state !== "full") {
+        //if (gridOne[y][x])
+        floodFill(mouseX, mouseY, 4)//fill(255, 0, 70, 100));
+        return gridOne[y][x];
+        //state = "blank"
+      //}
     }
   }
 }
@@ -154,13 +157,13 @@ function floodFill(x, y, newColor) {
   for (let y = 0; y < GRID_SIZE; y++) { 
     for (let x = 0; x < GRID_SIZE; x++) {
       if (x < 0 || x > GRID_SIZE || y < 0 || y > GRID_SIZE) {// || state !== "full" || gridOne[y][x] !== newColor) {
-        if ((gridOne[y][x] === 4) && (gridOne[y][x] === 8)) {
-          return;
+        if ((gridOne[y][x] === 4) || (gridOne[y][x] === 8)) {
+          return gridOne[y][x];
         }
       }
       else {
-        while (gridOne[y][x] === 0) {
-          state = "full";
+        if (gridOne[y][x] === 0) {
+          //state = "full";
           //newColor = 4;
           //if ((gridOne[y][x] !== 4) && (gridOne[y][x] !== 8)) {
             //gridOne[y][x] = newColor;
