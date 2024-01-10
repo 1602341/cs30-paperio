@@ -20,6 +20,7 @@
 // let 4 = block pink
 // let 9 = red
 let gridOne;
+let gridTwo;
 let gap;
 let cellSize;
 //let state = "blank";
@@ -33,9 +34,10 @@ let gameMusic;
 let playerX = 0;
 let playerY = 0;
 const GRID_SIZE = 50;
-let gameMode = "game";
+let gameMode = "start screen";
 let flood = "false";
 let score = 0;
+let ballArray = [];
 
 class Character {
   constructor (x, y, color) {
@@ -58,6 +60,7 @@ function setup() {
   //centerCanvas();
   loadPixels();
     gridOne = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
+    gridTwo = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
     gridOne[playerY][playerX] = 9;
     if (height >= width) {
       cellSize = width/GRID_SIZE
@@ -65,7 +68,8 @@ function setup() {
     else if (height < width) {
       cellSize = height/GRID_SIZE
     }
-    pixelDensity(5);
+   // pixelDensity(5);
+    window.setInterval(spawnBall, 500);
 }
 
 
@@ -73,6 +77,18 @@ function startScreen() {
   if (gameMode === "start screen") {
     //display title
     background("black");
+    //if ()
+    //spawnBall();
+    for (let theBall of ballArray) {
+      fill(theBall.color);
+      //move
+      theBall.x = noise(theBall.time) * width;
+      theBall.y = noise(theBall.time + 300) * height;
+      //display
+      rect(theBall.x, theBall.y, theBall.size);
+    
+      theBall.time += 0.01; 
+    }
     imageMode(CENTER);
     image(logo, width/2, height/2 - height/4, width/1.1 , height/4);
     //create start button
@@ -87,6 +103,16 @@ function startScreen() {
   }
 }
 
+function spawnBall() {
+  let ball = {
+    x: random(width),
+    y: random(height),
+    size: random(10, 50),
+    color: color(random(255), random(255), random(255), random(255)),
+    time: random(1000),
+  };
+ ballArray.push(ball);  
+}
 
 function endScreen() {
   gameMode = "end screen";
@@ -145,7 +171,7 @@ function implementFlood() {
       //if (state !== "full") {
         //if (gridOne[y][x])
         floodFill(mouseX, mouseY, 4)//fill(255, 0, 70, 100));
-        return gridOne[y][x];
+        return;
         //state = "blank"
       //}
     }
@@ -154,17 +180,17 @@ function implementFlood() {
 
 
 function floodFill(x, y, newColor) {
-  for (let y = 0; y < GRID_SIZE; y++) { 
-    for (let x = 0; x < GRID_SIZE; x++) {
+  // for (let y = 0; y < GRID_SIZE; y++) { 
+  //   for (let x = 0; x < GRID_SIZE; x++) {
       if (x < 0 || x > GRID_SIZE || y < 0 || y > GRID_SIZE) {// || state !== "full" || gridOne[y][x] !== newColor) {
         if ((gridOne[y][x] === 4) || (gridOne[y][x] === 8)) {
-          return gridOne[y][x];
+          return;
         }
       }
       else {
         if (gridOne[y][x] === 0) {
           //state = "full";
-          //newColor = 4;
+          newColor = 4;
           //if ((gridOne[y][x] !== 4) && (gridOne[y][x] !== 8)) {
             //gridOne[y][x] = newColor;
             //newColor = fill(255, 0, 70, 100);
@@ -172,12 +198,13 @@ function floodFill(x, y, newColor) {
             floodFill(x - 1, y, newColor);
             floodFill(x, y + 1, newColor);
             floodFill(x, y - 1, newColor);
+            console.log(gridOne[y][x])
           //}
         }
       }
     }
-  }
-}
+//   }
+// }
 
 function mouseClicked() {
   if (gameMode === "game") {
