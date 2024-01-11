@@ -60,7 +60,7 @@ function setup() {
   //centerCanvas();
   loadPixels();
     gridOne = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
-    gridTwo = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
+    //gridTwo = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
     gridOne[playerY][playerX] = 9;
     if (height >= width) {
       cellSize = width/GRID_SIZE
@@ -69,7 +69,7 @@ function setup() {
       cellSize = height/GRID_SIZE
     }
    // pixelDensity(5);
-    window.setInterval(spawnBall, 500);
+    window.setInterval(spawnBall, 1000);
 }
 
 
@@ -87,7 +87,7 @@ function startScreen() {
       //display
       rect(theBall.x, theBall.y, theBall.size);
     
-      theBall.time += 0.01; 
+      theBall.time += 0.001; 
     }
     imageMode(CENTER);
     image(logo, width/2, height/2 - height/4, width/1.1 , height/4);
@@ -107,7 +107,7 @@ function spawnBall() {
   let ball = {
     x: random(width),
     y: random(height),
-    size: random(10, 50),
+    size: random(5, 50),
     color: color(random(255), random(255), random(255), random(255)),
     time: random(1000),
   };
