@@ -40,10 +40,35 @@ let score = 0;
 let ballArray = [];
 
 class Character {
-  constructor (x, y, color) {
+  constructor (x, y, color, trail, ai) {
     this.x = x;
     this.y = y;
     this.newColor = color;
+    this.trail = trail;
+    this.ai = ai;
+  }
+
+  move() {
+    if (playerX + this.x >= 0 && playerX + this.x < GRID_SIZE && playerY + this.y >= 0 && playerY + this.y < GRID_SIZE) {
+        if (((gridOne[(playerY + this.y) - 1][playerX + this.x] === this.newColor) 
+        || (gridOne[playerY + this.y][(playerX + this.x) - 1] === this.newColor) 
+     )) {
+          flood = "true";
+      }
+      if ((gridOne[playerY + this.y][playerX + this.x] === 0) || (gridOne[playerY + this.y][playerX + this.x] === this.newColor)) {
+        let tempX = playerX;
+        let tempY = playerY;
+        playerX += this.x;
+        playerY += this.y;
+        //update grid
+        gridOne[playerY][playerX] = this.ai;
+        gridOne[tempY][tempX] = this.trail;
+      }
+      else if ((gridOne[playerY + this.y][playerX + this.x] === this.trail)) {
+        endBoom.play();
+        endScreen();
+      }
+    }
   }
 }
 
@@ -139,6 +164,7 @@ function isInRect(x, y, top, bottom, left, right) {
   return x >= left && x <= right && y >= top && y <= bottom;
 }
 
+
 function mousePressed() {
   let startClicked = isInRect(mouseX, mouseY, (height/2), 
   (height/2 + height/4), (width/2 - width/6), (width/2 - width/6 + width/3));
@@ -170,7 +196,10 @@ function implementFlood() {
     for (let x = 0; x < GRID_SIZE; x++) {
       //if (state !== "full") {
         //if (gridOne[y][x])
-        floodFill(mouseX, mouseY, 4)//fill(255, 0, 70, 100));
+        let y = Math.floor(mouseY/cellSize);
+        let x = Math.floor(mouseX/cellSize)
+        console.log(gridOne[y][x])
+        floodFill(x, y, 4)//fill(255, 0, 70, 100));
         return;
         //state = "blank"
       //}
@@ -198,7 +227,7 @@ function floodFill(x, y, newColor) {
             floodFill(x - 1, y, newColor);
             floodFill(x, y + 1, newColor);
             floodFill(x, y - 1, newColor);
-            console.log(gridOne[y][x])
+            //console.log(gridOne[y][x])
           //}
         }
       }
