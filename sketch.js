@@ -23,6 +23,7 @@ let gridOne;
 let gridTwo;
 let gap;
 let cellSize;
+let bob;
 //let state = "blank";
 let x;
 let y;
@@ -33,6 +34,8 @@ let endBoom;
 let gameMusic;
 let playerX = 0;
 let playerY = 0;
+let aiX = 40;
+let aiY = 0;
 const GRID_SIZE = 50;
 let gameMode = "start screen";
 let flood = "false";
@@ -40,31 +43,53 @@ let score = 0;
 let ballArray = [];
 
 class Character {
-  constructor (x, y, color, trail, ai) {
+  constructor (x, y, color, colorValue, trail, trailValue, ai, aiValue, landWidth, landHeight) {
     this.x = x;
     this.y = y;
-    this.newColor = color;
+    this.color = color;
+    this.colorValue = colorValue;
     this.trail = trail;
+    this.trailValue = trailValue;
     this.ai = ai;
+    this.aiValue = aiValue;
+    this.landWidth = landWidth;
+    this.landHeight = landHeight;
+  }
+  display() {
+    if (gameMode === "game") {
+      for (let y = 0; y < GRID_SIZE; y++) { 
+        for (let x = 0; x < GRID_SIZE; x++) {
+          if ((x >= this.landWidth) && (y <= this.landHeight)) {
+            fill(this.color);
+            rect(x * cellSize, y * cellSize, cellSize, cellSize);
+            gridOne[y][x] = 3;
+          }
+          else if (gridOne[y][x] === 2) {
+            fill(this.ai);
+            rect(x * cellSize, y * cellSize, cellSize, cellSize);
+          }
+        }
+      }
+    }
   }
 
   move() {
-    if (playerX + this.x >= 0 && playerX + this.x < GRID_SIZE && playerY + this.y >= 0 && playerY + this.y < GRID_SIZE) {
-        if (((gridOne[(playerY + this.y) - 1][playerX + this.x] === this.newColor) 
-        || (gridOne[playerY + this.y][(playerX + this.x) - 1] === this.newColor) 
+    if (aiX + this.x >= 0 && aiX + this.x < GRID_SIZE && aiY + this.y >= 0 && aiY + this.y < GRID_SIZE) {
+        if (((gridOne[(aiY + this.y) - 1][aiX + this.x] === this.color) 
+        || (gridOne[aiY + this.y][(aiX + this.x) - 1] === this.color) 
      )) {
           flood = "true";
       }
-      if ((gridOne[playerY + this.y][playerX + this.x] === 0) || (gridOne[playerY + this.y][playerX + this.x] === this.newColor)) {
-        let tempX = playerX;
-        let tempY = playerY;
-        playerX += this.x;
-        playerY += this.y;
+      if ((gridOne[aiY + this.y][aiX + this.x] === 0) || (gridOne[aiY + this.y][aiX + this.x] === this.color)) {
+        let tempX = aiX;
+        let tempY = aiY;
+        aiX += this.x;
+        aiY += this.y;
         //update grid
-        gridOne[playerY][playerX] = this.ai;
-        gridOne[tempY][tempX] = this.trail;
+        gridOne[aiY][aiX] = this.aiValue;
+        gridOne[tempY][tempX] = this.trailValue;
       }
-      else if ((gridOne[playerY + this.y][playerX + this.x] === this.trail)) {
+      else if ((gridOne[aiY + this.y][aiX + this.x] === this.trailValue)) {
         endBoom.play();
         endScreen();
       }
@@ -80,26 +105,28 @@ function preload() {
 }
 
 function setup() {
-  //createCanvas(windowWidth, windowHeight);
   new Canvas("1.5: 1.5");
-  //centerCanvas();
   loadPixels();
-    gridOne = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
-    //gridTwo = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
-    gridOne[playerY][playerX] = 9;
-    if (height >= width) {
-      cellSize = width/GRID_SIZE
-    }
-    else if (height < width) {
-      cellSize = height/GRID_SIZE
-    }
+  gridOne = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
+  gridOne[playerY][playerX] = 9;
+  gridOne[aiY][aiX] = 2;
+  if (height >= width) {
+    cellSize = width/GRID_SIZE
+  }
+  else if (height < width) {
+    cellSize = height/GRID_SIZE
+  }
    // pixelDensity(5);
-    window.setInterval(spawnBall, 1000);
+  window.setInterval(spawnBall, 1000);
+  bob = new Character(x, y, "blue", 3, "black", 2, "grey", 5, 40, 5);
+  //bob.display();
+  //bob.move();
 }
 
 
 function startScreen() {
   if (gameMode === "start screen") {
+
     //display title
     background("black");
     //if ()
@@ -125,6 +152,9 @@ function startScreen() {
     fill('white');
     textAlign(CENTER);
     text('START', width/2 - width/6, height/2 + height/12, width/3);
+  }
+  else {
+    //ballArray.stop;
   }
 }
 
@@ -186,6 +216,8 @@ function draw() {
   background("purple");
   noStroke();
   displayGrid();
+  bob.display();
+  bob.move();
   if (gameMode === "start screen") {
     startScreen();
   }
@@ -198,26 +230,26 @@ function implementFlood() {
         //if (gridOne[y][x])
         let y = Math.floor(mouseY/cellSize);
         let x = Math.floor(mouseX/cellSize)
-        console.log(gridOne[y][x])
         floodFill(x, y, 4)//fill(255, 0, 70, 100));
         return;
         //state = "blank"
-      //}
+        //}
+      }
     }
   }
-}
-
-
-function floodFill(x, y, newColor) {
-  // for (let y = 0; y < GRID_SIZE; y++) { 
-  //   for (let x = 0; x < GRID_SIZE; x++) {
-      if (x < 0 || x > GRID_SIZE || y < 0 || y > GRID_SIZE) {// || state !== "full" || gridOne[y][x] !== newColor) {
-        if ((gridOne[y][x] === 4) || (gridOne[y][x] === 8)) {
+  
+  
+  function floodFill(x, y, newColor) {
+    // for (let y = 0; y < GRID_SIZE; y++) { 
+      //   for (let x = 0; x < GRID_SIZE; x++) {
+        if ((x < 0 || x > GRID_SIZE || y < 0 || y > GRID_SIZE)) {// || state !== "full" || gridOne[y][x] !== newColor) {
+          if ((gridOne[y][x] === 4) || (gridOne[y][x] === 8)) {
+          console.log(gridOne[y][x])
           return;
         }
       }
-      else {
-        if (gridOne[y][x] === 0) {
+      //else {
+        else if (gridOne[y][x] === 0) {
           //state = "full";
           newColor = 4;
           //if ((gridOne[y][x] !== 4) && (gridOne[y][x] !== 8)) {
@@ -229,7 +261,7 @@ function floodFill(x, y, newColor) {
             floodFill(x, y - 1, newColor);
             //console.log(gridOne[y][x])
           //}
-        }
+        //}
       }
     }
 //   }
@@ -265,7 +297,7 @@ function movePlayer(x, y) {
       gridOne[playerY][playerX] = 9;
       gridOne[tempY][tempX] = 8;
     }
-    else if ((gridOne[playerY + y][playerX + x] === 8)) {
+    else if ((gridOne[playerY + y][playerX + x] !== 4) || (gridOne[playerY + y][playerX + x] !== 0)) {
       endBoom.play();
       //gridOne = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
       //gameMode = "end screen";
@@ -390,9 +422,9 @@ function displayGrid() {
     textSize(width/6);
     fill('black');
     textFont("consolas");
-    text('YOU DIED!', width/10, width/4);
+    text('YOU DIED!', width/2, width/4);
     textSize(width/8);
-    text('Score: ' + score, width/14, width/2);
+    text('Score: ' + score, width/2, width/2);
   }
 }
 
