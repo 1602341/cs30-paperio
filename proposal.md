@@ -5,8 +5,8 @@ A remake of the classic 2D Paper.io game. A single player will be constantly mov
 ## Needs To Have List 
 - Start screen ☑
 - Death screen ☑
-- Flood Fill Algorithm ☑/2
-- Other Interactive Characters/AI
+- Flood Fill Algorithm ☑
+- Other Interactive Characters/AI ☑
 - Music and sound effects ☑
 - Character controlled by WASD ☑
 
@@ -19,4 +19,5 @@ A remake of the classic 2D Paper.io game. A single player will be constantly mov
 - Different shaped objects
 - Different shaped rooms
 - Viewpoint follows the character you control
+- Scorekeeper ☑
 

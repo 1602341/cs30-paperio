@@ -37,10 +37,12 @@ let playerY = 0;
 let aiX = 40;
 let aiY = 0;
 const GRID_SIZE = 50;
-let gameMode = "start screen";
+let gameMode = "game";
 let flood = "false";
 let score = 0;
 let ballArray = [];
+let areaX = 0;
+let areaY = 0;
 
 class Character {
   constructor (x, y, color, colorValue, trail, trailValue, ai, aiValue, landWidth, landHeight) {
@@ -66,6 +68,10 @@ class Character {
           }
           else if (gridOne[y][x] === 2) {
             fill(this.ai);
+            rect(x * cellSize, y * cellSize, cellSize, cellSize);
+          }
+          else if (gridOne[y][x] === 5) {
+            fill(this.trail);
             rect(x * cellSize, y * cellSize, cellSize, cellSize);
           }
         }
@@ -106,7 +112,7 @@ function preload() {
 
 function setup() {
   new Canvas("1.5: 1.5");
-  loadPixels();
+  //loadPixels();
   gridOne = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
   gridOne[playerY][playerX] = 9;
   gridOne[aiY][aiX] = 2;
@@ -177,16 +183,6 @@ function endScreen() {
       gridOne[y][x] = 0;
     }
   }
-  // textSize(50);
-  // fill('black');
-  // text('SCORE', GRID_SIZE/2, GRID_SIZE/2);
-  //createCanvas(500, 500);
-  // new Canvas("1.5: 1.5");
-  // background("purple");
-  // textSize(50);
-  // fill('black');
-  // text('SCORE', GRID_SIZE/2 + 150, GRID_SIZE/2 + 400);
-  //noLoop();
 }
 
 //start button
@@ -221,51 +217,48 @@ function draw() {
   if (gameMode === "start screen") {
     startScreen();
   }
+  playerArea();
 }
 
 function implementFlood() {
   for (let y = 0; y < GRID_SIZE; y++) { 
     for (let x = 0; x < GRID_SIZE; x++) {
       //if (state !== "full") {
-        //if (gridOne[y][x])
         let y = Math.floor(mouseY/cellSize);
         let x = Math.floor(mouseX/cellSize)
-        floodFill(x, y, 4)//fill(255, 0, 70, 100));
+        floodFill(x, y, 4)
         return;
-        //state = "blank"
-        //}
       }
     }
   }
   
   
-  function floodFill(x, y, newColor) {
-    // for (let y = 0; y < GRID_SIZE; y++) { 
-      //   for (let x = 0; x < GRID_SIZE; x++) {
-        if ((x < 0 || x > GRID_SIZE || y < 0 || y > GRID_SIZE)) {// || state !== "full" || gridOne[y][x] !== newColor) {
-          if ((gridOne[y][x] === 4) || (gridOne[y][x] === 8)) {
-          console.log(gridOne[y][x])
-          return;
-        }
-      }
-      //else {
-        else if (gridOne[y][x] === 0) {
-          //state = "full";
-          newColor = 4;
-          //if ((gridOne[y][x] !== 4) && (gridOne[y][x] !== 8)) {
-            //gridOne[y][x] = newColor;
-            //newColor = fill(255, 0, 70, 100);
-            floodFill(x + 1, y, newColor);
-            floodFill(x - 1, y, newColor);
-            floodFill(x, y + 1, newColor);
-            floodFill(x, y - 1, newColor);
-            //console.log(gridOne[y][x])
-          //}
-        //}
-      }
+function floodFill(x, y, newColor) {
+  if ((x < 0 || x > GRID_SIZE || y < 0 || y > GRID_SIZE)) {
+    if ((gridOne[y][x] === 4) || (gridOne[y][x] === 8)) {
+      return;
     }
-//   }
-// }
+  }
+  else if (gridOne[y][x] === 0) {
+    //state = "full";
+    newColor = 4;
+    //if ((gridOne[y][x] !== 4) && (gridOne[y][x] !== 8)) {
+    gridOne[y][x] = newColor;
+    floodFill(x + 1, y, newColor);
+    floodFill(x - 1, y, newColor);
+    floodFill(x, y + 1, newColor);
+    floodFill(x, y - 1, newColor);
+  }
+}
+
+function playerArea() {
+  if (playerX > areaX) {
+    areaX = playerX;
+  }
+  if (playerY > areaY) {
+    areaY = playerY
+  }
+}
 
 function mouseClicked() {
   if (gameMode === "game") {
@@ -326,31 +319,6 @@ function keyPressed() {
     movePlayer(1, 0);
   }
 }
-
-
-
-
-
-// class Land {
-//   constructor (color) {
-//     this.x;
-//     this.y;
-//     this.color = color;
-//   }
-//   create() {
-//     for (let this.y = 0; this.y < GRID_SIZE; this.y++) { 
-//       for (let this.x = 0; this.x < GRID_SIZE; this.x++) {
-//         if (gameMode === "end screen") {
-//           if (y <= 5 && x < 10) {
-//             fill(255, 0, 70, 100);
-//             rect(x * cellSize, y * cellSize, cellSize, cellSize);
-//           }
-//         }
-//       }
-//     }
-//   }
-// }
-
 
 function displayGrid() {
   if (gameMode === "game") {  
@@ -422,9 +390,9 @@ function displayGrid() {
     textSize(width/6);
     fill('black');
     textFont("consolas");
-    text('YOU DIED!', width/2, width/4);
+    text('YOU DIED!', width/8, width/4);
     textSize(width/8);
-    text('Score: ' + score, width/2, width/2);
+    text('Score: ' + score, width/8, width/2);
   }
 }
 
