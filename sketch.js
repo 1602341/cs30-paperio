@@ -144,11 +144,12 @@ function setup() {
   gridOne = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
   gridOne[playerY][playerX] = 9;
   gridOne[aiY][aiX] = 2;
-  rules = createSelect();
-  rules.position(20, 20);
-  rules.option('VIEW RULES');
-  rules.option('Welcome to Paper.io! Use WASD to move yourself around the screen. The goal of the game is to increase your land. Do this by moving around the screen. Navigate your character');
-  if (height >= width) {
+  rules = new Sprite(width - GRID_SIZE * 2, height - GRID_SIZE, GRID_SIZE + width/8, GRID_SIZE);
+  // rules = createSelect();
+  // rules.position(20, 20);
+  // rules.option('VIEW RULES');
+  // rules.option('Welcome to Paper.io! Use WASD to move yourself around the screen. The goal of the game is to increase your land. Do this by moving around the screen. Navigate your character');
+   if (height >= width) {
     cellSize = width/GRID_SIZE
   }
   else if (height < width) {
@@ -160,11 +161,28 @@ function setup() {
   //bob.move();
 }
 
+// function startAnimation() {
+//   rules = new Sprite(width - GRID_SIZE, height - GRID_SIZE);
+//   rules.color = random(255);
+//   if (rules.mouse.hovering()) {
+//     rules.color = 'pink';
+//   }
+// }
+
+function viewRules() {
+  rules.color = "white";
+  if (rules.mouse.hovering()) {
+    rules.color = 'pink';
+  }
+  fill("black");
+  text("Rules", width - GRID_SIZE * 2, height - GRID_SIZE);
+}
 
 function startScreen() {
   if (gameMode === "start screen") {
     //display title
     background("black");
+    //startAnimation();
     for (let theBall of ballArray) {
       fill(theBall.color);
       //move
@@ -247,6 +265,7 @@ function draw() {
     startScreen();
   }
   playerArea();
+  viewRules();
 }
 
 function implementFlood() {
