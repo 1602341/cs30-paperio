@@ -14,11 +14,14 @@
 // Pixels:
 // https://p5js.org/reference/#/p5/pixels
 
-
 // let 0 = white
 // let 8 = trail pink
 // let 4 = block pink
 // let 9 = red
+// let 3 = blue
+// let 2 = black
+// let 5 = grey
+
 let gridOne;
 let gridTwo;
 let gap;
@@ -37,7 +40,7 @@ let playerY = 0;
 let aiX = 40;
 let aiY = 0;
 const GRID_SIZE = 50;
-let gameMode = "game";
+let gameMode = "start screen";
 let flood = "false";
 let score = 0;
 let ballArray = [];
@@ -61,12 +64,7 @@ class Character {
     if (gameMode === "game") {
       for (let y = 0; y < GRID_SIZE; y++) { 
         for (let x = 0; x < GRID_SIZE; x++) {
-          if ((x >= this.landWidth) && (y <= this.landHeight)) {
-            fill(this.color);
-            rect(x * cellSize, y * cellSize, cellSize, cellSize);
-            gridOne[y][x] = 3;
-          }
-          else if (gridOne[y][x] === 2) {
+          if (gridOne[y][x] === 2) {
             fill(this.ai);
             rect(x * cellSize, y * cellSize, cellSize, cellSize);
           }
@@ -74,12 +72,29 @@ class Character {
             fill(this.trail);
             rect(x * cellSize, y * cellSize, cellSize, cellSize);
           }
+          else if (gridOne[y][x] === 8) {
+            fill("pink");
+            rect(x * cellSize, y * cellSize, cellSize, cellSize);
+          }
+          else if (gridOne[y][x] === 4) {
+            fill(255, 0, 70, 100);
+            rect(x * cellSize, y * cellSize, cellSize, cellSize);
+          }
+          else if (gridOne[y][x] === 9) {
+            fill("red");
+            rect(x * cellSize, y * cellSize, cellSize, cellSize);
+          }
+          else if ((x >= this.landWidth) && (y <= this.landHeight)) {
+            fill(this.color);
+            rect(x * cellSize, y * cellSize, cellSize, cellSize);
+            gridOne[y][x] = 3;
+          }
         }
       }
     }
   }
 
-  move() {
+  move(aiX, aiY) {
     if (aiX + this.x >= 0 && aiX + this.x < GRID_SIZE && aiY + this.y >= 0 && aiY + this.y < GRID_SIZE) {
         if (((gridOne[(aiY + this.y) - 1][aiX + this.x] === this.color) 
         || (gridOne[aiY + this.y][(aiX + this.x) - 1] === this.color) 
@@ -101,6 +116,20 @@ class Character {
       }
     }
   }
+  // keyPressed() {
+  //   if (key === "j") {//s
+  //     move(0, 1);
+  //   }
+  //   else if (key === "u") {//w
+  //     move(0, -1);
+  //   }
+  //   else if (key === "h") {//a
+  //     move(-1, 0);
+  //   }
+  //   else if (key === "k") {//d
+  //     move(1, 0);
+  //   }
+  // }
 }
 
 function preload() {
@@ -112,19 +141,21 @@ function preload() {
 
 function setup() {
   new Canvas("1.5: 1.5");
-  //loadPixels();
   gridOne = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
   gridOne[playerY][playerX] = 9;
   gridOne[aiY][aiX] = 2;
+  rules = createSelect();
+  rules.position(20, 20);
+  rules.option('VIEW RULES');
+  rules.option('Welcome to Paper.io! Use WASD to move yourself around the screen. The goal of the game is to increase your land. Do this by moving around the screen. Navigate your character');
   if (height >= width) {
     cellSize = width/GRID_SIZE
   }
   else if (height < width) {
     cellSize = height/GRID_SIZE
   }
-   // pixelDensity(5);
   window.setInterval(spawnBall, 1000);
-  bob = new Character(x, y, "blue", 3, "black", 2, "grey", 5, 40, 5);
+  bob = new Character(x, y, "blue", 3, "grey", 5, "black", 2, 40, 5);
   //bob.display();
   //bob.move();
 }
@@ -132,11 +163,8 @@ function setup() {
 
 function startScreen() {
   if (gameMode === "start screen") {
-
     //display title
     background("black");
-    //if ()
-    //spawnBall();
     for (let theBall of ballArray) {
       fill(theBall.color);
       //move
@@ -158,9 +186,9 @@ function startScreen() {
     fill('white');
     textAlign(CENTER);
     text('START', width/2 - width/6, height/2 + height/12, width/3);
-  }
-  else {
-    //ballArray.stop;
+    // let c = rules.selected();
+    // background(c);
+
   }
 }
 
@@ -211,9 +239,10 @@ function mousePressed() {
 function draw() {
   background("purple");
   noStroke();
-  displayGrid();
   bob.display();
-  bob.move();
+  //bob.move();
+  //bob.keyPressed();
+  displayGrid();
   if (gameMode === "start screen") {
     startScreen();
   }
@@ -224,30 +253,34 @@ function implementFlood() {
   for (let y = 0; y < GRID_SIZE; y++) { 
     for (let x = 0; x < GRID_SIZE; x++) {
       //if (state !== "full") {
-        let y = Math.floor(mouseY/cellSize);
-        let x = Math.floor(mouseX/cellSize)
-        floodFill(x, y, 4)
-        return;
+        if (flood === "true") {
+          let y = Math.floor(mouseY/cellSize);
+          let x = Math.floor(mouseX/cellSize)
+          floodFill(x, y, 4)
+          return;
+        }
       }
     }
   }
   
   
 function floodFill(x, y, newColor) {
-  if ((x < 0 || x > GRID_SIZE || y < 0 || y > GRID_SIZE)) {
-    if ((gridOne[y][x] === 4) || (gridOne[y][x] === 8)) {
-      return;
+  if ((x <= areaX) && (y <= areaY)) {
+    if ((x < 0 || x > GRID_SIZE || y < 0 || y > GRID_SIZE)) {
+      if ((gridOne[y][x] === 4)) {//} || (gridOne[y][x] === 8)) {
+        return;
+      }
     }
-  }
-  else if (gridOne[y][x] === 0) {
-    //state = "full";
-    newColor = 4;
-    //if ((gridOne[y][x] !== 4) && (gridOne[y][x] !== 8)) {
-    gridOne[y][x] = newColor;
-    floodFill(x + 1, y, newColor);
-    floodFill(x - 1, y, newColor);
-    floodFill(x, y + 1, newColor);
-    floodFill(x, y - 1, newColor);
+    else if ((gridOne[y][x] === 0) || (gridOne[y][x] === 3)) {
+      //state = "full";
+      newColor = 4;
+      //if ((gridOne[y][x] !== 4) && (gridOne[y][x] !== 8)) {
+      gridOne[y][x] = newColor;
+      floodFill(x + 1, y, newColor);
+      floodFill(x - 1, y, newColor);
+      floodFill(x, y + 1, newColor);
+      floodFill(x, y - 1, newColor);
+    }
   }
 }
 
@@ -281,7 +314,7 @@ function movePlayer(x, y) {
         flood = "true";
       //}
     }
-    if ((gridOne[playerY + y][playerX + x] === 0) || (gridOne[playerY + y][playerX + x] === 4)) {
+    if ((gridOne[playerY + y][playerX + x] === 0) || (gridOne[playerY + y][playerX + x] === 4) || (gridOne[playerY + y][playerX + x] === 3)) {
       let tempX = playerX;
       let tempY = playerY;
       playerX += x;
@@ -290,18 +323,10 @@ function movePlayer(x, y) {
       gridOne[playerY][playerX] = 9;
       gridOne[tempY][tempX] = 8;
     }
-    else if ((gridOne[playerY + y][playerX + x] !== 4) || (gridOne[playerY + y][playerX + x] !== 0)) {
+    else if (gridOne[playerY + y][playerX + x] === 8) {//|| (gridOne[playerY + y][playerX + x] !== 0) || (gridOne[playerY + y][playerX + x] !== 3)) {
       endBoom.play();
-      //gridOne = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
-      //gameMode = "end screen";
       endScreen();
     }
-    // else if ((gridOne[playerY + y][playerX + x] === 4)) {
-    //   //implementFlood();
-    // }
-    // else if (flood === "true") {
-    //   gridOne[tempY][tempX] = 4;
-    // }
   }
 }
 
@@ -317,6 +342,18 @@ function keyPressed() {
   }
   else if (key === "d") {//d
     movePlayer(1, 0);
+  }
+  else if (key === "j") {//s
+    bob.move(0, 1);
+  }
+  else if (key === "u") {//w
+    bob.move(0, -1);
+  }
+  else if (key === "h") {//a
+    bob.move(-1, 0);
+  }
+  else if (key === "k") {//d
+    bob.move(1, 0);
   }
 }
 
@@ -363,10 +400,6 @@ function displayGrid() {
             fill(255, 0, 70, 100)
             rect(x * cellSize, y * cellSize, cellSize, cellSize); 
             gridOne[y][x] = 4;
-            //if (mouseClicked()) {
-            //  implementFlood();
-            //}
-            //flood = "false"
             scoreKeeper();
           }
           else {
@@ -378,13 +411,9 @@ function displayGrid() {
           fill(255, 0, 70, 100)
           rect(x * cellSize, y * cellSize, cellSize, cellSize);
         }
-        // else {
-          //   fill("grey");
-          //   rect(x * cellSize, y * cellSize, cellSize, cellSize);
-          // }
-        }
       }
-      flood = "false";
+    }
+    flood = "false";
   }
   if (gameMode === "end screen") {
     textSize(width/6);
@@ -412,17 +441,6 @@ function scoreKeeper() {
     for (let x = 0; x < GRID_SIZE; x++) {
       if (gridOne[y][x] === 4) {
         score = score + 1;
-      }
-    }
-  }
-  //return score;
-}
-
-function blockTracker() {
-  for (let y = 0; y < GRID_SIZE; y++) { 
-    for (let x = 0; x < GRID_SIZE; x++) {
-      if (gridOne[y][x] === 4) {
-        gridOne[y][x] = "block";
       }
     }
   }
