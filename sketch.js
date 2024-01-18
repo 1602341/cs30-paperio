@@ -27,7 +27,6 @@ let gridTwo;
 let gap;
 let cellSize;
 let blue;
-//let state = "blank";
 let x;
 let y;
 let newColor;
@@ -51,6 +50,7 @@ let areaY = 0;
 let aiAreaX = 50;
 let aiAreaY = 0;
 let winner;
+let ruleState = 0;
 
 class Character {
   constructor (x, y, color, colorValue, trail, trailValue, ai, aiValue, landWidth, landHeight) {
@@ -160,6 +160,7 @@ class Character {
 }
 
 function preload() {
+  //initializes all images and sounds needed in the game
   logo = loadImage("paperio.png");
   startBackground = loadImage("paperio-background.png")
   endBoom = loadSound("endBoom.wav");
@@ -167,16 +168,19 @@ function preload() {
 }
 
 function setup() {
+  //fits square canvas into the screen
   new Canvas("1.5: 1.5");
+  //generates the grid that the game occurs on
   gridOne = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
+  //moving character for the pink player
   gridOne[playerY][playerX] = 9;
+  //moving character for the blue player
   gridOne[aiY][aiX] = 2;
+  //creates button to display the rule pop up
   rules = new Sprite(width - GRID_SIZE * 2, height - GRID_SIZE, GRID_SIZE + width/8, GRID_SIZE);
-  //ruleScreen = new Sprite(width - GRID_SIZE * 2, height - GRID_SIZE, width/2, height/2);
-  // rules = createSelect();
-  // rules.position(20, 20);
-  // rules.option('VIEW RULES');
-  // rules.option('Welcome to Paper.io! Use WASD to move yourself around the screen. The goal of the game is to increase your land. Do this by moving around the screen. Navigate your character');
+  //creates pop up window 
+  ruleScreen = new Sprite(GRID_SIZE * 4, GRID_SIZE * 6, width/2, height/1.5);
+  ruleScreen.visible = false;
    if (height >= width) {
     cellSize = width/GRID_SIZE
   }
@@ -196,7 +200,6 @@ function setup() {
 // }
 
 function viewRules() {
-  //rules = new Sprite(width - GRID_SIZE * 2, height - GRID_SIZE, GRID_SIZE + width/8, GRID_SIZE);
   rules.color = "grey";
   rules.textSize = 40;
   rules.text = "Rules";
@@ -204,10 +207,26 @@ function viewRules() {
     rules.color = 'white';
   }
   if (rules.mouse.pressed()) {
-    ruleScreen = new Sprite(GRID_SIZE * 4, GRID_SIZE * 6, width/2, height/1.5);
+    if (ruleState === 0) {
+      ruleScreen.visible = true;
+      ruleState = 1;
+    }
+    else if (ruleState === 1) {
+      ruleScreen.visible = false;
+      ruleState = 0;
+    }
     ruleScreen.color = "white";
     ruleScreen.textSize = 10;
-    //ruleScreen.text = ("Welcome to Paper.io! Use WASD to move yourself around the screen.The goal of the game is to increase your land. Do this by moving around the screen. Navigate your character");
+    ruleScreen.text = `Welcome to Paper.io!
+    For the pink character use WASD
+    to move yourself around the screen.
+    For the blue character use UHJK
+    to move yourself around the screen.
+    The goal of the game is to
+    increase the amount of land you have.
+    This can be done by consuming blank land (purple),
+    or stealing the opposing player's land.
+    Consume the most land to win.`;
   }
 } 
 
@@ -289,8 +308,6 @@ function draw() {
   noStroke();
   blue.display();
   blue.area();
-  //blue.move();
-  //blue.keyPressed();
   displayGrid();
   if (gameMode === "start screen") {
     startScreen();
@@ -302,18 +319,17 @@ function draw() {
 function implementFlood() {
   for (let y = 0; y < GRID_SIZE; y++) { 
     for (let x = 0; x < GRID_SIZE; x++) {
-      //if (state !== "full") {
-        if (pinkFlood === "true") {
-          let y = Math.floor(mouseY/cellSize);
-          let x = Math.floor(mouseX/cellSize);
-          if ((key === "w") || (key === "a") || (key === "s") || (key === "d")) {
-            floodFill(x, y, 4)
-          }
-          return;
+      if (pinkFlood === "true") {
+        let y = Math.floor(mouseY/cellSize);
+        let x = Math.floor(mouseX/cellSize);
+        if ((key === "w") || (key === "a") || (key === "s") || (key === "d")) {
+          floodFill(x, y, 4)
         }
+        return;
       }
     }
   }
+}
   
   
 function floodFill(x, y, newColor) {
@@ -324,7 +340,6 @@ function floodFill(x, y, newColor) {
       }
     }
     else if ((gridOne[y][x] === 0) || (gridOne[y][x] === 3)) {
-      //state = "full";
       newColor = 4;
       //if ((gridOne[y][x] !== 4) && (gridOne[y][x] !== 8)) {
       gridOne[y][x] = newColor;
@@ -415,16 +430,16 @@ function keyPressed() {
   else if (key === "d") {//d
     movePlayer(1, 0);
   }
-  else if (key === "j") {//s
+  else if (key === "j") {//j
     blue.aiMove(0, 1);
   }
-  else if (key === "u") {//w
+  else if (key === "u") {//u
     blue.aiMove(0, -1);
   }
-  else if (key === "h") {//a
+  else if (key === "h") {//h
     blue.aiMove(-1, 0);
   }
-  else if (key === "k") {//d
+  else if (key === "k") {//k
     blue.aiMove(1, 0);
   }
 }
@@ -468,14 +483,15 @@ function displayGrid() {
   if (gameMode === "end screen") {
     findWinner();
     textSize(width/10);
+    textAlign(CENTER);
     fill("black");
     textFont("consolas");
-    text(winner + " wins!", width/8, width/4);
-    textSize(width/8);
+    text(winner + " wins!", width/2, width/4);
+    textSize(width/12);
     fill(255, 0, 70, 100);
-    text(' Pinks Score: ' + pinkScore, width/8, width/2);
+    text(' Pinks Score: ' + pinkScore, width/2, width/2);
     fill(0, 70, 255, 100);
-    text(' Blues Score: ' + blueScore, width/8, width/2 + width/4);
+    text(' Blues Score: ' + blueScore, width/2, width/2 + width/4);
   }
 }
 
