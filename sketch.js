@@ -26,7 +26,7 @@ let gridOne;
 let gridTwo;
 let gap;
 let cellSize;
-let bob;
+let blue;
 //let state = "blank";
 let x;
 let y;
@@ -41,11 +41,16 @@ let aiX = 40;
 let aiY = 0;
 const GRID_SIZE = 50;
 let gameMode = "start screen";
-let flood = "false";
-let score = 0;
+let pinkFlood = "false";
+let blueFlood = "false";
+let blueScore = 0;
+let pinkScore = 0;
 let ballArray = [];
 let areaX = 0;
 let areaY = 0;
+let aiAreaX = 50;
+let aiAreaY = 0;
+let winner;
 
 class Character {
   constructor (x, y, color, colorValue, trail, trailValue, ai, aiValue, landWidth, landHeight) {
@@ -64,12 +69,12 @@ class Character {
     if (gameMode === "game") {
       for (let y = 0; y < GRID_SIZE; y++) { 
         for (let x = 0; x < GRID_SIZE; x++) {
-          if (gridOne[y][x] === 2) {
+          if (gridOne[y][x] === this.aiValue) {
             fill(this.ai);
             rect(x * cellSize, y * cellSize, cellSize, cellSize);
           }
-          else if (gridOne[y][x] === 5) {
-            fill(this.trail);
+          else if (gridOne[y][x] === this.colorValue) {
+            fill(this.color);
             rect(x * cellSize, y * cellSize, cellSize, cellSize);
           }
           else if (gridOne[y][x] === 8) {
@@ -89,47 +94,69 @@ class Character {
             rect(x * cellSize, y * cellSize, cellSize, cellSize);
             gridOne[y][x] = 3;
           }
+          else if (gridOne[y][x] === this.trailValue) {
+            if (blueFlood === "true") {
+              fill(this.color)
+              rect(x * cellSize, y * cellSize, cellSize, cellSize); 
+              gridOne[y][x] = this.colorValue;
+              scoreKeeper();
+            }
+            else {
+              fill(this.trail);
+              rect(x * cellSize, y * cellSize, cellSize, cellSize);
+            }
+          }
         }
       }
+      blueFlood = "false"
     }
   }
-
-  move(aiX, aiY) {
-    if (aiX + this.x >= 0 && aiX + this.x < GRID_SIZE && aiY + this.y >= 0 && aiY + this.y < GRID_SIZE) {
-        if (((gridOne[(aiY + this.y) - 1][aiX + this.x] === this.color) 
-        || (gridOne[aiY + this.y][(aiX + this.x) - 1] === this.color) 
-     )) {
-          flood = "true";
+  aiMove(x, y) {
+    if (aiX + x >= 0 && aiX + x < GRID_SIZE && aiY + y >= 0 && aiY + y < GRID_SIZE) {
+      if (((gridOne[(aiY + y) - 1][aiX + x] === this.colorValue) 
+        || (gridOne[aiY + y][(aiX + x) - 1] === this.colorValue))) {
+        blueFlood = "true";
       }
-      if ((gridOne[aiY + this.y][aiX + this.x] === 0) || (gridOne[aiY + this.y][aiX + this.x] === this.color)) {
+      if ((gridOne[aiY + y][aiX + x] === 0) || (gridOne[aiY + y][aiX + x] === this.colorValue) || (gridOne[playerY + y][playerX + x] === 4)) {
         let tempX = aiX;
         let tempY = aiY;
-        aiX += this.x;
-        aiY += this.y;
+        aiX += x;
+        aiY += y;
         //update grid
         gridOne[aiY][aiX] = this.aiValue;
         gridOne[tempY][tempX] = this.trailValue;
       }
-      else if ((gridOne[aiY + this.y][aiX + this.x] === this.trailValue)) {
+      if ((gridOne[aiY + y][aiX + x] === this.trailValue)) {
         endBoom.play();
         endScreen();
       }
     }
   }
-  // keyPressed() {
-  //   if (key === "j") {//s
-  //     move(0, 1);
-  //   }
-  //   else if (key === "u") {//w
-  //     move(0, -1);
-  //   }
-  //   else if (key === "h") {//a
-  //     move(-1, 0);
-  //   }
-  //   else if (key === "k") {//d
-  //     move(1, 0);
-  //   }
-  // }
+  aiFill(x, y, newColor) {
+    if ((x >= aiAreaX) && (y <= aiAreaY)) {
+      if ((x < 0 || x > GRID_SIZE || y < 0 || y > GRID_SIZE)) {
+        if ((gridOne[y][x] === this.colorValue)) {
+          return;
+        }
+      }
+      else if ((gridOne[y][x] === 0) || (gridOne[y][x] === 4)) {
+        newColor = this.colorValue;
+        gridOne[y][x] = newColor;
+        blue.aiFill(x + 1, y, newColor);
+        blue.aiFill(x - 1, y, newColor);
+        blue.aiFill(x, y + 1, newColor);
+        blue.aiFill(x, y - 1, newColor);
+      }
+    }
+  }
+  area() {
+    if (aiX < aiAreaX) {
+      aiAreaX = aiX;
+    }
+    if (aiY > aiAreaY) {
+      aiAreaY = aiY
+    }
+  }
 }
 
 function preload() {
@@ -145,6 +172,7 @@ function setup() {
   gridOne[playerY][playerX] = 9;
   gridOne[aiY][aiX] = 2;
   rules = new Sprite(width - GRID_SIZE * 2, height - GRID_SIZE, GRID_SIZE + width/8, GRID_SIZE);
+  //ruleScreen = new Sprite(width - GRID_SIZE * 2, height - GRID_SIZE, width/2, height/2);
   // rules = createSelect();
   // rules.position(20, 20);
   // rules.option('VIEW RULES');
@@ -156,9 +184,7 @@ function setup() {
     cellSize = height/GRID_SIZE
   }
   window.setInterval(spawnBall, 1000);
-  bob = new Character(x, y, "blue", 3, "grey", 5, "black", 2, 40, 5);
-  //bob.display();
-  //bob.move();
+  blue = new Character(x, y, "blue", 3, "grey", 5, "black", 2, 40, 5);
 }
 
 // function startAnimation() {
@@ -170,13 +196,20 @@ function setup() {
 // }
 
 function viewRules() {
-  rules.color = "white";
+  //rules = new Sprite(width - GRID_SIZE * 2, height - GRID_SIZE, GRID_SIZE + width/8, GRID_SIZE);
+  rules.color = "grey";
+  rules.textSize = 40;
+  rules.text = "Rules";
   if (rules.mouse.hovering()) {
-    rules.color = 'pink';
+    rules.color = 'white';
   }
-  fill("black");
-  text("Rules", width - GRID_SIZE * 2, height - GRID_SIZE);
-}
+  if (rules.mouse.pressed()) {
+    ruleScreen = new Sprite(GRID_SIZE * 4, GRID_SIZE * 6, width/2, height/1.5);
+    ruleScreen.color = "white";
+    ruleScreen.textSize = 10;
+    //ruleScreen.text = ("Welcome to Paper.io! Use WASD to move yourself around the screen.The goal of the game is to increase your land. Do this by moving around the screen. Navigate your character");
+  }
+} 
 
 function startScreen() {
   if (gameMode === "start screen") {
@@ -204,9 +237,6 @@ function startScreen() {
     fill('white');
     textAlign(CENTER);
     text('START', width/2 - width/6, height/2 + height/12, width/3);
-    // let c = rules.selected();
-    // background(c);
-
   }
 }
 
@@ -257,9 +287,10 @@ function mousePressed() {
 function draw() {
   background("purple");
   noStroke();
-  bob.display();
-  //bob.move();
-  //bob.keyPressed();
+  blue.display();
+  blue.area();
+  //blue.move();
+  //blue.keyPressed();
   displayGrid();
   if (gameMode === "start screen") {
     startScreen();
@@ -272,10 +303,12 @@ function implementFlood() {
   for (let y = 0; y < GRID_SIZE; y++) { 
     for (let x = 0; x < GRID_SIZE; x++) {
       //if (state !== "full") {
-        if (flood === "true") {
+        if (pinkFlood === "true") {
           let y = Math.floor(mouseY/cellSize);
-          let x = Math.floor(mouseX/cellSize)
-          floodFill(x, y, 4)
+          let x = Math.floor(mouseX/cellSize);
+          if ((key === "w") || (key === "a") || (key === "s") || (key === "d")) {
+            floodFill(x, y, 4)
+          }
           return;
         }
       }
@@ -314,8 +347,20 @@ function playerArea() {
 
 function mouseClicked() {
   if (gameMode === "game") {
-    if (flood = "true") {
+    if (pinkFlood = "true") {
       implementFlood();
+    }
+    if (blueFlood = "true") {
+      for (let y = 0; y < GRID_SIZE; y++) { 
+        for (let x = 0; x < GRID_SIZE; x++) {
+          let y = Math.floor(mouseY/cellSize);
+          let x = Math.floor(mouseX/cellSize)
+          if ((key === "u") || (key === "h") || (key === "j") || (key === "k")) {
+            blue.aiFill(x, y, this.colorValue)
+          }
+          return;
+        }
+      }
     }
   }
 }
@@ -330,7 +375,7 @@ function movePlayer(x, y) {
      //|| (gridOne[playerY + y][(playerX + x) + 1] === 4)
    )) {
       //if (playerX + x >= 9 && playerX + x < GRID_SIZE && playerY + y >= 4 && playerY + y < GRID_SIZE) {
-        flood = "true";
+        pinkFlood = "true";
       //}
     }
     if ((gridOne[playerY + y][playerX + x] === 0) || (gridOne[playerY + y][playerX + x] === 4) || (gridOne[playerY + y][playerX + x] === 3)) {
@@ -342,7 +387,15 @@ function movePlayer(x, y) {
       gridOne[playerY][playerX] = 9;
       gridOne[tempY][tempX] = 8;
     }
-    else if (gridOne[playerY + y][playerX + x] === 8) {//|| (gridOne[playerY + y][playerX + x] !== 0) || (gridOne[playerY + y][playerX + x] !== 3)) {
+    else if ((gridOne[playerY + y][playerX + x] === 8) || (gridOne[playerY + y][playerX + x] === blue.trailValue)) {//|| (gridOne[playerY + y][playerX + x] !== 0) || (gridOne[playerY + y][playerX + x] !== 3)) {
+      if (gridOne[playerY + y][playerX + x] === 8) {
+        //blueScore = blueScore + 200;
+        winner = "blue"
+      }
+      else if (gridOne[playerY + y][playerX + x] === blue.trailValue) {
+        //pinkScore = pinkScore + 200;
+        winner = "pink"
+      }
       endBoom.play();
       endScreen();
     }
@@ -363,16 +416,16 @@ function keyPressed() {
     movePlayer(1, 0);
   }
   else if (key === "j") {//s
-    bob.move(0, 1);
+    blue.aiMove(0, 1);
   }
   else if (key === "u") {//w
-    bob.move(0, -1);
+    blue.aiMove(0, -1);
   }
   else if (key === "h") {//a
-    bob.move(-1, 0);
+    blue.aiMove(-1, 0);
   }
   else if (key === "k") {//d
-    bob.move(1, 0);
+    blue.aiMove(1, 0);
   }
 }
 
@@ -392,30 +445,8 @@ function displayGrid() {
             gridOne[y][x] = 4;
           }
         }
-        // //blue
-        // else if (y <= 5 && x > 40) {
-          //   if (gameMode === "game") {
-            //     fill("blue");
-            //     rect(x * cellSize, y * cellSize, cellSize, cellSize);
-            //   }
-            //   else if (gameMode === "end screen") {
-              //     fill("white");
-              //     rect(x * cellSize, y * cellSize, cellSize, cellSize);
-              //   }
-              // }
-              // //green
-              // else if (y >= 45 && x < 10) {
-                //   if (gameMode === "game") {
-                  //     fill("green");
-                  //     rect(x * cellSize, y * cellSize, cellSize, cellSize);
-                  //   }
-                  //   else if (gameMode === "end screen") {
-                    //     fill("white");
-                    //     rect(x * cellSize, y * cellSize, cellSize, cellSize);
-                    //   }
-                    // }
         else if (gridOne[y][x] === 8) {
-          if (flood === "true") {
+          if (pinkFlood === "true") {
             fill(255, 0, 70, 100)
             rect(x * cellSize, y * cellSize, cellSize, cellSize); 
             gridOne[y][x] = 4;
@@ -432,15 +463,19 @@ function displayGrid() {
         }
       }
     }
-    flood = "false";
+    pinkFlood = "false";
   }
   if (gameMode === "end screen") {
-    textSize(width/6);
-    fill('black');
+    findWinner();
+    textSize(width/10);
+    fill("black");
     textFont("consolas");
-    text('YOU DIED!', width/8, width/4);
+    text(winner + " wins!", width/8, width/4);
     textSize(width/8);
-    text('Score: ' + score, width/8, width/2);
+    fill(255, 0, 70, 100);
+    text(' Pinks Score: ' + pinkScore, width/8, width/2);
+    fill(0, 70, 255, 100);
+    text(' Blues Score: ' + blueScore, width/8, width/2 + width/4);
   }
 }
 
@@ -459,8 +494,27 @@ function scoreKeeper() {
   for (let y = 0; y < GRID_SIZE; y++) { 
     for (let x = 0; x < GRID_SIZE; x++) {
       if (gridOne[y][x] === 4) {
-        score = score + 1;
+        //if ((y > 5) && (x > 10)) {
+         pinkScore = pinkScore + 1;
+        //}
+      }
+      if (gridOne[y][x] === 3) {
+        //if ((x < this.landWidth) && (y > this.landHeight)) {
+          blueScore = blueScore + 1;
+        //}
       }
     }
+  }
+}
+
+function findWinner() {
+  if (blueScore > pinkScore) {
+    winner = "blue";
+  }
+  else if (pinkScore > blueScore) {
+    winner = "pink"
+  }
+  else if (pinkScore === blueScore) {
+    winner = "no one"
   }
 }
