@@ -45,7 +45,7 @@ let pinkFlood = "false";
 let blueFlood = "false";
 let blueScore = 0;
 let pinkScore = 0;
-let ballArray = [];
+let squareArray = [];
 let areaX = 0;
 let areaY = 0;
 let aiAreaX = 50;
@@ -183,14 +183,15 @@ function setup() {
   ruleScreen = new Sprite(GRID_SIZE * 4, GRID_SIZE * 6, width/2, height/1.5);
   //tests whether screen should be visible
   ruleScreen.visible = false;
-  //
+  //determines cellsize
    if (height >= width) {
     cellSize = width/GRID_SIZE
   }
   else if (height < width) {
     cellSize = height/GRID_SIZE
   }
-  window.setInterval(spawnBall, 1000);
+  //determines how quickly the squares appear in the start screen background visuals
+  window.setInterval(spawnSquare, 1000);
   blue = new Character(x, y, "blue", 3, "grey", 5, "green", 2, 40, 5);
 }
 
@@ -202,22 +203,28 @@ function setup() {
 //   }
 // }
 
+//rule pop up screen
 function viewRules() {
+  //button that lead to rule screen
   rules.color = "grey";
   rules.textSize = 40;
   rules.text = "Rules";
   if (rules.mouse.hovering()) {
     rules.color = 'white';
   }
+  //determines if the rules pop up screen should be visible
   if (rules.mouse.pressed()) {
     if (ruleState === 0) {
       ruleScreen.visible = true;
+      //if ruleState === 1 then the rule screen is visible
       ruleState = 1;
     }
     else if (ruleState === 1) {
       ruleScreen.visible = false;
+      //if ruleState === 0 then the rule screen is invisible
       ruleState = 0;
     }
+    //creates the text for the rule pop up window
     ruleScreen.color = "white";
     ruleScreen.textSize = 10;
     ruleScreen.text = `Welcome to Paper.io!
@@ -235,19 +242,18 @@ function viewRules() {
 
 function startScreen() {
   if (gameMode === "start screen") {
-    //display title
     background("black");
-    //startAnimation();
-    for (let theBall of ballArray) {
-      fill(theBall.color);
+    //creates background visuals for the start screen
+    for (let theSquare of squareArray) {
+      fill(theSquare.color);
       //move
-      theBall.x = noise(theBall.time) * width;
-      theBall.y = noise(theBall.time + 300) * height;
+      theSquare.x = noise(theSquare.time) * width;
+      theSquare.y = noise(theSquare.time + 300) * height;
       //display
-      rect(theBall.x, theBall.y, theBall.size);
-    
-      theBall.time += 0.001; 
+      rect(theSquare.x, theSquare.y, theSquare.size);  
+      theSquare.time += 0.001; 
     }
+    //display title
     imageMode(CENTER);
     image(logo, width/2, height/2 - height/4, width/1.1 , height/4);
     //create start button
@@ -262,20 +268,22 @@ function startScreen() {
   }
 }
 
-function spawnBall() {
-  let ball = {
+//spawns squares for the background visuals of start screen
+function spawnSquare() {
+  let square = {
     x: random(width),
     y: random(height),
     size: random(5, 50),
     color: color(random(255), random(255), random(255), random(255)),
     time: random(1000),
   };
- ballArray.push(ball);  
+ squareArray.push(square);  
 }
 
 function endScreen() {
   gameMode = "end screen";
   gameMusic.stop();
+  //clears grid for the end screen
   for (let y = 0; y < GRID_SIZE; y++) { 
     for (let x = 0; x < GRID_SIZE; x++) {
       gridOne[y][x] = 0;
@@ -283,17 +291,20 @@ function endScreen() {
   }
 }
 
-//start button
+//checks if mouse is in start button
 function isInRect(x, y, top, bottom, left, right) {
   return x >= left && x <= right && y >= top && y <= bottom;
 }
 
 
 function mousePressed() {
+  //checks if start button is pressed
   let startClicked = isInRect(mouseX, mouseY, (height/2), 
   (height/2 + height/4), (width/2 - width/6), (width/2 - width/6 + width/3));
   if (startClicked) {
+    //starts game
     gameMode = "game";
+    //plays music while game is in progress
     if (!gameMusic.isPlaying()) {
       if (gameMode === "game") {
         gameMusic.setVolume(0.5);
@@ -309,22 +320,29 @@ function mousePressed() {
 function draw() {
   background("purple");
   noStroke();
+  //activates blue player
   blue.display();
   blue.area();
+  //activates pink player
   displayGrid();
   if (gameMode === "start screen") {
     startScreen();
   }
+  //keeps track of where the player has moved
   playerArea();
+  //controls rules pop up
   viewRules();
 }
 
+//starts flood fill function if appropriate
 function implementFlood() {
   for (let y = 0; y < GRID_SIZE; y++) { 
     for (let x = 0; x < GRID_SIZE; x++) {
+      //controls if the flood can be occur
       if (pinkFlood === "true") {
         let y = Math.floor(mouseY/cellSize);
         let x = Math.floor(mouseX/cellSize);
+        //last person who clicked is who can flood fill
         if ((key === "w") || (key === "a") || (key === "s") || (key === "d")) {
           floodFill(x, y, 4)
         }
@@ -333,19 +351,23 @@ function implementFlood() {
     }
   }
 }
-  
-  
+    
+//flood fill for the pink character
 function floodFill(x, y, newColor) {
+  //if within playable area then flood
   if ((x <= areaX) && (y <= areaY)) {
     if ((x < 0 || x > GRID_SIZE || y < 0 || y > GRID_SIZE)) {
-      if ((gridOne[y][x] === 4)) {//} || (gridOne[y][x] === 8)) {
+      //break case
+      if ((gridOne[y][x] === 4)) {
         return;
       }
     }
+    //while to color is not equal to pink
     else if ((gridOne[y][x] === 0) || (gridOne[y][x] === 3)) {
       newColor = 4;
-      //if ((gridOne[y][x] !== 4) && (gridOne[y][x] !== 8)) {
+      //changes color of cell clicked
       gridOne[y][x] = newColor;
+      //recursivly changes color of cells until break point
       floodFill(x + 1, y, newColor);
       floodFill(x - 1, y, newColor);
       floodFill(x, y + 1, newColor);
@@ -354,6 +376,7 @@ function floodFill(x, y, newColor) {
   }
 }
 
+//keeps track of the games playable area
 function playerArea() {
   if (playerX > areaX) {
     areaX = playerX;
@@ -368,6 +391,7 @@ function mouseClicked() {
     if (pinkFlood = "true") {
       implementFlood();
     }
+    //starts flood for the blue character
     if (blueFlood = "true") {
       for (let y = 0; y < GRID_SIZE; y++) { 
         for (let x = 0; x < GRID_SIZE; x++) {
@@ -386,34 +410,31 @@ function mouseClicked() {
 function movePlayer(x, y) {
   //edge case check
   if (playerX + x >= 0 && playerX + x < GRID_SIZE && playerY + y >= 0 && playerY + y < GRID_SIZE) {
-    //if (playerX + x >= 4 && playerX + x < GRID_SIZE && playerY + y >= 9 && playerY + y < GRID_SIZE) {
-      if (((gridOne[(playerY + y) - 1][playerX + x] === 4) 
-      || (gridOne[playerY + y][(playerX + x) - 1] === 4) 
-     //|| (gridOne[(playerY + y) + 1][playerX + x] === 4)
-     //|| (gridOne[playerY + y][(playerX + x) + 1] === 4)
-   )) {
-      //if (playerX + x >= 9 && playerX + x < GRID_SIZE && playerY + y >= 4 && playerY + y < GRID_SIZE) {
-        pinkFlood = "true";
-      //}
+    if (((gridOne[(playerY + y) - 1][playerX + x] === 4) || (gridOne[playerY + y][(playerX + x) - 1] === 4))) {
+      //can flood if the character meets its own land
+      pinkFlood = "true";
     }
     if ((gridOne[playerY + y][playerX + x] === 0) || (gridOne[playerY + y][playerX + x] === 4) || (gridOne[playerY + y][playerX + x] === 3)) {
       let tempX = playerX;
       let tempY = playerY;
+      //moves player forward
       playerX += x;
       playerY += y;
       //update grid
       gridOne[playerY][playerX] = 9;
+      //leaves trail behind character
       gridOne[tempY][tempX] = 8;
     }
-    else if ((gridOne[playerY + y][playerX + x] === 8) || (gridOne[playerY + y][playerX + x] === blue.trailValue)) {//|| (gridOne[playerY + y][playerX + x] !== 0) || (gridOne[playerY + y][playerX + x] !== 3)) {
-      if (gridOne[playerY + y][playerX + x] === 8) {
-        //blueScore = blueScore + 200;
-        winner = "blue"
-      }
-      else if (gridOne[playerY + y][playerX + x] === blue.trailValue) {
-        //pinkScore = pinkScore + 200;
-        winner = "pink"
-      }
+    //if pink character hits itself or blue
+    else if ((gridOne[playerY + y][playerX + x] === 8) || (gridOne[playerY + y][playerX + x] === blue.trailValue)) {
+      // if (gridOne[playerY + y][playerX + x] === 8) {
+      //  // winner = "blue"
+      // }
+      // //if blue hits its own trail
+      // else if (gridOne[playerY + y][playerX + x] === blue.trailValue) {
+      //  // winner = "pink"
+      // }
+      //plays sound when someone dies
       endBoom.play();
       endScreen();
     }
@@ -421,6 +442,7 @@ function movePlayer(x, y) {
 }
 
 function keyPressed() {
+  //moves pink when a key is pressed
   if (key === "s") {//s
     movePlayer(0, 1);
   }
@@ -433,6 +455,7 @@ function keyPressed() {
   else if (key === "d") {//d
     movePlayer(1, 0);
   }
+  //moves blue when a key is pressed
   else if (key === "j") {//j
     blue.aiMove(0, 1);
   }
@@ -448,19 +471,21 @@ function keyPressed() {
 }
 
 function displayGrid() {
+  //displays and chages the values in the grid
   if (gameMode === "game") {  
     for (let y = 0; y < GRID_SIZE; y++) { 
       for (let x = 0; x < GRID_SIZE; x++) {
+        //displays pink character
         if (gridOne[y][x] === 9) {
           fill("red")
           rect(x * cellSize, y * cellSize, cellSize, cellSize);
         }
+        //border around the screen
         else if ((y === 0) || (y === 49) || (x === 0) || (x === 49)) {
           fill("black")
           rect(x * cellSize, y * cellSize, cellSize, cellSize);
           gridOne[y][x] = 7;
         }
-        //pink
         else if (y <= 5 && x < 10) {
           if (gameMode === "game") {
             fill(255, 0, 70, 100);
@@ -519,14 +544,10 @@ function scoreKeeper() {
   for (let y = 0; y < GRID_SIZE; y++) { 
     for (let x = 0; x < GRID_SIZE; x++) {
       if (gridOne[y][x] === 4) {
-        //if ((y > 5) && (x > 10)) {
-         pinkScore = pinkScore + 1;
-        //}
+        pinkScore = pinkScore + 1;
       }
       if (gridOne[y][x] === 3) {
-        //if ((x < this.landWidth) && (y > this.landHeight)) {
-          blueScore = blueScore + 1;
-        //}
+        blueScore = blueScore + 1;
       }
     }
   }
