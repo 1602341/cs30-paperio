@@ -1,6 +1,6 @@
 // Major Project: Paper.io
 // Natalie Woo
-// January 00, 2024
+// January 22, 2024
 //
 // Extra for Experts:
 // - flood fill
@@ -19,8 +19,9 @@
 // let 4 = block pink
 // let 9 = red
 // let 3 = blue
-// let 2 = black
+// let 2 = green
 // let 5 = grey
+// let 7 = black
 
 let gridOne;
 let gridTwo;
@@ -34,10 +35,10 @@ let logo;
 let startBackground;
 let endBoom;
 let gameMusic;
-let playerX = 0;
-let playerY = 0;
+let playerX = 1;
+let playerY = 1;
 let aiX = 40;
-let aiY = 0;
+let aiY = 1;
 const GRID_SIZE = 50;
 let gameMode = "start screen";
 let pinkFlood = "false";
@@ -178,9 +179,11 @@ function setup() {
   gridOne[aiY][aiX] = 2;
   //creates button to display the rule pop up
   rules = new Sprite(width - GRID_SIZE * 2, height - GRID_SIZE, GRID_SIZE + width/8, GRID_SIZE);
-  //creates pop up window 
+  //creates pop up window that shows the rules
   ruleScreen = new Sprite(GRID_SIZE * 4, GRID_SIZE * 6, width/2, height/1.5);
+  //tests whether screen should be visible
   ruleScreen.visible = false;
+  //
    if (height >= width) {
     cellSize = width/GRID_SIZE
   }
@@ -188,7 +191,7 @@ function setup() {
     cellSize = height/GRID_SIZE
   }
   window.setInterval(spawnBall, 1000);
-  blue = new Character(x, y, "blue", 3, "grey", 5, "black", 2, 40, 5);
+  blue = new Character(x, y, "blue", 3, "grey", 5, "green", 2, 40, 5);
 }
 
 // function startAnimation() {
@@ -452,6 +455,11 @@ function displayGrid() {
           fill("red")
           rect(x * cellSize, y * cellSize, cellSize, cellSize);
         }
+        else if ((y === 0) || (y === 49) || (x === 0) || (x === 49)) {
+          fill("black")
+          rect(x * cellSize, y * cellSize, cellSize, cellSize);
+          gridOne[y][x] = 7;
+        }
         //pink
         else if (y <= 5 && x < 10) {
           if (gameMode === "game") {
@@ -465,6 +473,7 @@ function displayGrid() {
             fill(255, 0, 70, 100)
             rect(x * cellSize, y * cellSize, cellSize, cellSize); 
             gridOne[y][x] = 4;
+            //implementFlood();
             scoreKeeper();
           }
           else {
