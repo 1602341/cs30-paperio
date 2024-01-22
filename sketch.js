@@ -2,17 +2,11 @@
 // Natalie Woo
 // January 22, 2024
 //
-// Extra for Experts:
-// - flood fill
-//
 // Flood Fill:
 // https://gist.github.com/syphh/8cbad50acb2e0f4ca60ef041814c271b
 // https://codeguppy.com/code.html?ayLSdMZfjz8aJRGU7KfL
 // https://www.youtube.com/watch?v=VuiXOc81UDM
 // https://editor.p5js.org/micuat/sketches/xzRtK385
-//
-// Pixels:
-// https://p5js.org/reference/#/p5/pixels
 
 // let 0 = white
 // let 8 = trail pink
@@ -97,7 +91,7 @@ class Character {
           }
           else if (gridOne[y][x] === this.trailValue) {
             if (blueFlood === "true") {
-              fill(this.color)
+              fill(this.color);
               rect(x * cellSize, y * cellSize, cellSize, cellSize); 
               gridOne[y][x] = this.colorValue;
               scoreKeeper();
@@ -109,13 +103,12 @@ class Character {
           }
         }
       }
-      blueFlood = "false"
+      blueFlood = "false";
     }
   }
   aiMove(x, y) {
     if (aiX + x >= 0 && aiX + x < GRID_SIZE && aiY + y >= 0 && aiY + y < GRID_SIZE) {
-      if (((gridOne[(aiY + y) - 1][aiX + x] === this.colorValue) 
-        || (gridOne[aiY + y][(aiX + x) - 1] === this.colorValue))) {
+      if (((gridOne[(aiY + y) - 1][aiX + x] === this.colorValue) || (gridOne[aiY + y][(aiX + x) - 1] === this.colorValue))) {
         blueFlood = "true";
       }
       if ((gridOne[aiY + y][aiX + x] === 0) || (gridOne[aiY + y][aiX + x] === this.colorValue) || (gridOne[playerY + y][playerX + x] === 4)) {
@@ -143,6 +136,7 @@ class Character {
       else if ((gridOne[y][x] === 0) || (gridOne[y][x] === 4)) {
         newColor = this.colorValue;
         gridOne[y][x] = newColor;
+        gainLand.play();
         blue.aiFill(x + 1, y, newColor);
         blue.aiFill(x - 1, y, newColor);
         blue.aiFill(x, y + 1, newColor);
@@ -155,7 +149,7 @@ class Character {
       aiAreaX = aiX;
     }
     if (aiY > aiAreaY) {
-      aiAreaY = aiY
+      aiAreaY = aiY;
     }
   }
 }
@@ -163,9 +157,10 @@ class Character {
 function preload() {
   //initializes all images and sounds needed in the game
   logo = loadImage("paperio.png");
-  startBackground = loadImage("paperio-background.png")
+  startBackground = loadImage("paperio-background.png");
   endBoom = loadSound("endBoom.wav");
-  gameMusic = loadSound("background-sound.mp3")
+  gameMusic = loadSound("background-sound.mp3");
+  gainLand = loadSound("land-sound.wav");
 }
 
 function setup() {
@@ -178,36 +173,28 @@ function setup() {
   //moving character for the blue player
   gridOne[aiY][aiX] = 2;
   //creates button to display the rule pop up
-  rules = new Sprite(width - GRID_SIZE * 2, height - GRID_SIZE, GRID_SIZE + width/8, GRID_SIZE);
+  rules = new Sprite(width - width/12 * 2, height - height/12, width/4, height/10);
   //creates pop up window that shows the rules
-  ruleScreen = new Sprite(GRID_SIZE * 4, GRID_SIZE * 6, width/2, height/1.5);
+  ruleScreen = new Sprite(width/2, height/2, width/2, height/2);
   //tests whether screen should be visible
   ruleScreen.visible = false;
   //determines cellsize
    if (height >= width) {
-    cellSize = width/GRID_SIZE
+    cellSize = width/GRID_SIZE;
   }
   else if (height < width) {
-    cellSize = height/GRID_SIZE
+    cellSize = height/GRID_SIZE;
   }
   //determines how quickly the squares appear in the start screen background visuals
   window.setInterval(spawnSquare, 1000);
   blue = new Character(x, y, "blue", 3, "grey", 5, "green", 2, 40, 5);
 }
 
-// function startAnimation() {
-//   rules = new Sprite(width - GRID_SIZE, height - GRID_SIZE);
-//   rules.color = random(255);
-//   if (rules.mouse.hovering()) {
-//     rules.color = 'pink';
-//   }
-// }
-
 //rule pop up screen
 function viewRules() {
   //button that lead to rule screen
   rules.color = "grey";
-  rules.textSize = 40;
+  rules.textSize = width/12;
   rules.text = "Rules";
   if (rules.mouse.hovering()) {
     rules.color = 'white';
@@ -226,7 +213,7 @@ function viewRules() {
     }
     //creates the text for the rule pop up window
     ruleScreen.color = "white";
-    ruleScreen.textSize = 10;
+    ruleScreen.textSize = width/50;
     ruleScreen.text = `Welcome to Paper.io!
     For the pink character use WASD
     to move yourself around the screen.
@@ -235,7 +222,11 @@ function viewRules() {
     The goal of the game is to
     increase the amount of land you have.
     This can be done by consuming blank land (purple),
-    or stealing the opposing player's land.
+    or stealing the opposing player's land. 
+    Connect your character back to 
+    its land to change the color of its trail.
+    Click within the area between the trail
+    and land to gain the land.
     Consume the most land to win.`;
   }
 } 
@@ -257,14 +248,15 @@ function startScreen() {
     imageMode(CENTER);
     image(logo, width/2, height/2 - height/4, width/1.1 , height/4);
     //create start button
-    textSize(width/12);
+    textSize(width/8);
     fill('grey')
     stroke("white")
     imageMode(CORNER)
     rect(width/2 - width/6, height/2, width/3, height/4);
-    fill('white');
+    noStroke();
+    fill('black');
     textAlign(CENTER);
-    text('START', width/2 - width/6, height/2 + height/12, width/3);
+    text('Start', width/2 - width/6, height/2 + height/14, width/3);
   }
 }
 
@@ -299,8 +291,7 @@ function isInRect(x, y, top, bottom, left, right) {
 
 function mousePressed() {
   //checks if start button is pressed
-  let startClicked = isInRect(mouseX, mouseY, (height/2), 
-  (height/2 + height/4), (width/2 - width/6), (width/2 - width/6 + width/3));
+  let startClicked = isInRect(mouseX, mouseY, (height/2), (height/2 + height/4), (width/2 - width/6), (width/2 - width/6 + width/3));
   if (startClicked) {
     //starts game
     gameMode = "game";
@@ -309,9 +300,6 @@ function mousePressed() {
       if (gameMode === "game") {
         gameMusic.setVolume(0.5);
         gameMusic.loop();
-        if (gameMode === "end screen"){
-          gameMusic.stop();
-        }
       }
     }
   }
@@ -344,7 +332,7 @@ function implementFlood() {
         let x = Math.floor(mouseX/cellSize);
         //last person who clicked is who can flood fill
         if ((key === "w") || (key === "a") || (key === "s") || (key === "d")) {
-          floodFill(x, y, 4)
+          floodFill(x, y, 4);
         }
         return;
       }
@@ -367,6 +355,7 @@ function floodFill(x, y, newColor) {
       newColor = 4;
       //changes color of cell clicked
       gridOne[y][x] = newColor;
+      gainLand.play();
       //recursivly changes color of cells until break point
       floodFill(x + 1, y, newColor);
       floodFill(x - 1, y, newColor);
@@ -382,7 +371,7 @@ function playerArea() {
     areaX = playerX;
   }
   if (playerY > areaY) {
-    areaY = playerY
+    areaY = playerY;
   }
 }
 
@@ -427,13 +416,6 @@ function movePlayer(x, y) {
     }
     //if pink character hits itself or blue
     else if ((gridOne[playerY + y][playerX + x] === 8) || (gridOne[playerY + y][playerX + x] === blue.trailValue)) {
-      // if (gridOne[playerY + y][playerX + x] === 8) {
-      //  // winner = "blue"
-      // }
-      // //if blue hits its own trail
-      // else if (gridOne[playerY + y][playerX + x] === blue.trailValue) {
-      //  // winner = "pink"
-      // }
       //plays sound when someone dies
       endBoom.play();
       endScreen();
@@ -477,7 +459,7 @@ function displayGrid() {
       for (let x = 0; x < GRID_SIZE; x++) {
         //displays pink character
         if (gridOne[y][x] === 9) {
-          fill("red")
+          fill("red");
           rect(x * cellSize, y * cellSize, cellSize, cellSize);
         }
         //border around the screen
@@ -486,6 +468,7 @@ function displayGrid() {
           rect(x * cellSize, y * cellSize, cellSize, cellSize);
           gridOne[y][x] = 7;
         }
+        //pink land
         else if (y <= 5 && x < 10) {
           if (gameMode === "game") {
             fill(255, 0, 70, 100);
@@ -494,41 +477,49 @@ function displayGrid() {
           }
         }
         else if (gridOne[y][x] === 8) {
+          //changes trail to the flood fill color when character hits land
           if (pinkFlood === "true") {
-            fill(255, 0, 70, 100)
+            fill(255, 0, 70, 100);
             rect(x * cellSize, y * cellSize, cellSize, cellSize); 
             gridOne[y][x] = 4;
             //implementFlood();
             scoreKeeper();
           }
+          //leaves trail behind character
           else {
-            fill("pink")
+            fill("pink");
             rect(x * cellSize, y * cellSize, cellSize, cellSize);
           }
         }
+        //colors flood fill
         else if (gridOne[y][x] === 4) {
           fill(255, 0, 70, 100)
           rect(x * cellSize, y * cellSize, cellSize, cellSize);
         }
       }
     }
+    //stops flood from occuring once 
     pinkFlood = "false";
   }
+  //displays text on end screen
   if (gameMode === "end screen") {
     findWinner();
     textSize(width/10);
     textAlign(CENTER);
     fill("black");
     textFont("consolas");
+    //shows who the winner is
     text(winner + " wins!", width/2, width/4);
     textSize(width/12);
     fill(255, 0, 70, 100);
+    //show each players score
     text(' Pinks Score: ' + pinkScore, width/2, width/2);
     fill(0, 70, 255, 100);
     text(' Blues Score: ' + blueScore, width/2, width/2 + width/4);
   }
 }
 
+//creates the base for the grid
 function generateEmptyGrid(cols, rows) {
     let newGrid = [];
     for (let y = 0; y < rows; y++) {
@@ -540,6 +531,7 @@ function generateEmptyGrid(cols, rows) {
     return newGrid;
 }
 
+//increases the score of the players whenever they gain more land
 function scoreKeeper() {
   for (let y = 0; y < GRID_SIZE; y++) { 
     for (let x = 0; x < GRID_SIZE; x++) {
@@ -553,14 +545,15 @@ function scoreKeeper() {
   }
 }
 
+//determines who the winner of the game is based on their score
 function findWinner() {
   if (blueScore > pinkScore) {
     winner = "blue";
   }
   else if (pinkScore > blueScore) {
-    winner = "pink"
+    winner = "pink";
   }
   else if (pinkScore === blueScore) {
-    winner = "no one"
+    winner = "no one";
   }
 }
